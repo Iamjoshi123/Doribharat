@@ -122,3 +122,51 @@
 - **Color Palette:** Rooted in Earth tones (#A62C2B, #3D5A2F).
 - **Typography:** Modern Sans (Plus Jakarta Sans) for readability, Classic Serif (DM Serif) for heritage feel.
 - **Interactions:** Use Tailwind transitions for smooth scale and opacity changes on hover.
+
+---
+
+## Media Uploads with Google Cloud Storage
+
+The admin experience now signs short-lived upload URLs so product images are persisted as public GCS URLs inside `products.images`.
+
+### 1) Provision the bucket
+Ensure you are authenticated with `gcloud` for the correct project, then run:
+
+```bash
+# Create the bucket with uniform bucket-level access
+gcloud storage buckets create gs://doribharat-product-media --location=asia-south1 --uniform-bucket-level-access
+
+# Apply lifecycle rules (auto-delete temp uploads) and CORS for the admin origin
+gcloud storage buckets update gs://doribharat-product-media \
+  --lifecycle-file=infra/gcs-bucket.yaml \
+  --cors-file=infra/gcs-bucket.yaml
+
+# Allow public reads for product images
+gcloud storage buckets add-iam-policy-binding gs://doribharat-product-media \
+  --member=allUsers --role=roles/storage.objectViewer
+```
+
+The `infra/gcs-iam-policy.json` and `infra/gcs-bucket.yaml` files track the IAM, lifecycle, and CORS settings.
+
+### 2) Run the lightweight signing server
+The signing endpoint lives at `POST /media/sign-upload` and returns a `uploadUrl` + `publicUrl` pair.
+
+1. Export credentials (the private key should preserve newlines):
+   ```bash
+   export GCS_SERVICE_ACCOUNT_EMAIL="service-account@project.iam.gserviceaccount.com"
+   export GCS_SERVICE_ACCOUNT_KEY="$(cat key.json | jq -r .private_key)"
+   export GCS_BUCKET_NAME="doribharat-product-media"
+   export ADMIN_ORIGIN="http://localhost:5173"
+   ```
+2. Start the server:
+   ```bash
+   npm run media:server
+   ```
+
+### 3) Wire the admin UI
+The admin modal now lets you upload from disk. Configure the UI to reach your signing server:
+```bash
+echo "VITE_MEDIA_API_BASE=http://localhost:4000" > .env.local
+```
+
+Uploads call `POST /media/sign-upload` to create a signed URL, upload the file directly to GCS, and persist the returned public URL in `products.images`.

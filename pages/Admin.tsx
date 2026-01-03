@@ -1,7 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Product, User, UserRole, Category, HomepageConfig, ProductSpec } from '../types';
 import { generateProductDescription } from '../services/geminiService';
+import { requestSignedUpload, uploadToSignedUrl } from '../services/mediaClient';
 
 interface AdminProps {
   user: User | null;
@@ -30,6 +31,9 @@ const Admin: React.FC<AdminProps> = ({
   const [hpFormData, setHpFormData] = useState<HomepageConfig>(homepageConfig);
   const [isGenerating, setIsGenerating] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [uploadingImageName, setUploadingImageName] = useState<string | null>(null);
+  const [mediaError, setMediaError] = useState<string | null>(null);
+  const uploadInputRef = useRef<HTMLInputElement | null>(null);
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -170,6 +174,34 @@ const Admin: React.FC<AdminProps> = ({
   const removeImageUrl = (index: number) => {
     const imgs = (productFormData.images || []).filter((_, i) => i !== index);
     setProductFormData({ ...productFormData, images: imgs });
+  };
+
+  const handleUploadFromDevice = async (file: File, index?: number) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setMediaError('Only image uploads are allowed.');
+      return;
+    }
+
+    setUploadingImageName(file.name);
+    setMediaError(null);
+    try {
+      const signed = await requestSignedUpload(file, 'public');
+      await uploadToSignedUrl(file, signed.uploadUrl);
+      const imgs = [...(productFormData.images || [])];
+      if (typeof index === 'number') {
+        imgs[index] = signed.publicUrl;
+      } else {
+        imgs.push(signed.publicUrl);
+      }
+      setProductFormData({ ...productFormData, images: imgs });
+    } catch (err) {
+      console.error(err);
+      setMediaError('Failed to upload to cloud storage. Check media API configuration.');
+    } finally {
+      setUploadingImageName(null);
+      if (uploadInputRef.current) uploadInputRef.current.value = '';
+    }
   };
 
   // --- Category Management ---
@@ -530,15 +562,35 @@ const Admin: React.FC<AdminProps> = ({
                   <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-stone-400">Product Media</h4>
                 </div>
                 <div className="space-y-6">
-                  <div className="flex justify-between items-center">
-                    <label className="text-[10px] uppercase font-bold text-stone-800">Image Assets <span className="text-[#A62C2B]">*</span></label>
-                    <button onClick={addImageUrl} className="text-[10px] text-[#A62C2B] font-bold flex items-center gap-1 hover:underline">
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" /></svg>
-                      ADD PHOTO URL
-                    </button>
+                  <div className="flex flex-wrap justify-between gap-4 items-center">
+                    <div>
+                      <label className="text-[10px] uppercase font-bold text-stone-800 block">Image Assets <span className="text-[#A62C2B]">*</span></label>
+                      <p className="text-[11px] text-stone-500 font-light">Uploads are signed through <code className="font-mono text-xs bg-stone-100 px-1 rounded">POST /media/sign-upload</code> and saved as public GCS URLs.</p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        ref={uploadInputRef}
+                        id="new-image-upload" 
+                        className="hidden" 
+                        onChange={e => {
+                          const file = e.target.files?.[0];
+                          if (file) handleUploadFromDevice(file);
+                        }}
+                      />
+                      <label htmlFor="new-image-upload" className="text-[10px] text-[#A62C2B] font-bold flex items-center gap-2 uppercase tracking-widest cursor-pointer bg-stone-50 border border-stone-200 px-4 py-2 rounded-xl hover:bg-stone-100 transition-all">
+                        {uploadingImageName ? 'Uploading…' : 'Upload to GCS'}
+                      </label>
+                      <button onClick={addImageUrl} className="text-[10px] text-[#A62C2B] font-bold flex items-center gap-1 hover:underline whitespace-nowrap">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4" /></svg>
+                        Add Photo URL
+                      </button>
+                    </div>
                   </div>
                   
                   {errors.images && <p className="text-[10px] text-red-500 font-bold mt-1 uppercase tracking-widest">{errors.images}</p>}
+                  {mediaError && <p className="text-[10px] text-red-500 font-bold uppercase tracking-widest">{mediaError}</p>}
                   
                   <div className="space-y-4">
                     {productFormData.images?.map((url, i) => (
@@ -556,6 +608,18 @@ const Admin: React.FC<AdminProps> = ({
                           }} 
                           className={`flex-grow bg-stone-50 rounded-xl px-4 py-3 text-xs font-mono outline-none border transition-all ${errors.images ? 'border-red-400 focus:border-red-500' : 'border-transparent focus:border-stone-200'}`} 
                         />
+                        <label className="text-[10px] text-[#A62C2B] font-bold uppercase tracking-widest cursor-pointer bg-stone-50 border border-stone-200 px-3 py-2 rounded-lg hover:bg-stone-100 transition-all whitespace-nowrap">
+                          <input 
+                            type="file" 
+                            accept="image/*" 
+                            className="hidden" 
+                            onChange={e => {
+                              const file = e.target.files?.[0];
+                              if (file) handleUploadFromDevice(file, i);
+                            }}
+                          />
+                          {uploadingImageName ? 'Uploading…' : 'Replace via GCS'}
+                        </label>
                         <button onClick={() => removeImageUrl(i)} className="w-10 h-10 flex items-center justify-center text-stone-300 hover:text-red-400 transition-colors">&times;</button>
                       </div>
                     ))}

@@ -1,0 +1,27 @@
+name: doribharat-product-media
+location: asia-south1
+storageClass: STANDARD
+iamConfiguration:
+  uniformBucketLevelAccess:
+    enabled: true
+cors:
+  - origin:
+      - http://localhost:5173
+    method:
+      - PUT
+      - POST
+      - GET
+      - HEAD
+    responseHeader:
+      - Content-Type
+      - x-goog-meta-*
+    maxAgeSeconds: 3600
+lifecycle:
+  rule:
+    - action:
+        type: Delete
+      condition:
+        age: 7
+        matchesPrefix:
+          - temp/
+          - uploads/temp/
