@@ -14,7 +14,7 @@ export const readSecret = async (secretName: string, projectId?: string): Promis
   const [response] = await client.accessSecretVersion({
     name: buildSecretPath(secretName, projectId),
   });
-  const value = response.payload?.data?.toString("utf8") ?? "";
+  const value = Buffer.from(response.payload?.data ?? "").toString("utf8");
   secretCache.set(secretName, value);
   return value;
 };
