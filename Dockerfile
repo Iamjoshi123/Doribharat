@@ -5,9 +5,10 @@ WORKDIR /app
 
 # Step 1: Install ALL dependencies (including devDependencies like TypeScript)
 FROM base AS deps
+ENV NODE_ENV=development
 COPY package*.json ./
-# We force production to false here so npm install gets 'tsc'
-RUN npm install
+# Ensure devDependencies are installed so TypeScript is available for the build
+RUN npm install --production=false
 
 FROM deps AS build
 # Step 2: Copy source and build
