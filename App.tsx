@@ -1,8 +1,17 @@
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { HashRouter as Router, Routes, Route, Link, NavLink, useLocation } from 'react-router-dom';
 import { Product, CartItem, User, UserRole, Category, HomepageConfig } from './types';
 import { INITIAL_PRODUCTS, INITIAL_CATEGORIES, INITIAL_HOMEPAGE_CONFIG, WHATSAPP_NUMBER } from './constants';
+import { 
+  clearStoredSession,
+  fetchCategoriesFromApi,
+  fetchHomepageConfigFromApi,
+  fetchProductsFromApi,
+  getStoredUser,
+  loginAdmin,
+  refreshSession
+} from './services/api';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
@@ -45,10 +54,7 @@ const App: React.FC = () => {
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [user, setUser] = useState<User | null>(() => {
-    const saved = localStorage.getItem('doribharat_user');
-    return saved ? JSON.parse(saved) : null;
-  });
+  const [user, setUser] = useState<User | null>(() => getStoredUser());
 
   useEffect(() => {
     localStorage.setItem('doribharat_products', JSON.stringify(products));
@@ -69,6 +75,42 @@ const App: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('doribharat_wishlist', JSON.stringify(wishlist));
   }, [wishlist]);
+
+  useEffect(() => {
+    const hydrateSession = async () => {
+      try {
+        const refreshedUser = await refreshSession();
+        if (refreshedUser) {
+          setUser(refreshedUser);
+        }
+      } catch (error) {
+        console.error('Failed to refresh admin session', error);
+        clearStoredSession();
+        setUser(null);
+      }
+    };
+    hydrateSession();
+  }, []);
+
+  useEffect(() => {
+    const fetchRemoteContent = async () => {
+      try {
+        const [remoteProducts, remoteCategories, remoteHomepage] = await Promise.all([
+          fetchProductsFromApi(),
+          fetchCategoriesFromApi(),
+          fetchHomepageConfigFromApi()
+        ]);
+
+        if (remoteProducts?.length) setProducts(remoteProducts);
+        if (remoteCategories?.length) setCategories(remoteCategories);
+        if (remoteHomepage) setHomepageConfig(remoteHomepage);
+      } catch (error) {
+        console.error('Failed to load storefront content from API', error);
+      }
+    };
+
+    fetchRemoteContent();
+  }, []);
 
   // Only show visible products to users
   const visibleProducts = useMemo(() => products.filter(p => p.isVisible), [products]);
@@ -99,16 +141,15 @@ const App: React.FC = () => {
     setWishlist(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
-  const handleAdminLogin = (username: string) => {
-    const newUser = { id: 'admin1', username, role: UserRole.ADMIN };
-    setUser(newUser);
-    localStorage.setItem('doribharat_user', JSON.stringify(newUser));
-  };
+  const handleAdminLogin = useCallback(async (username: string, password: string) => {
+    const authenticatedUser = await loginAdmin(username, password);
+    setUser(authenticatedUser);
+  }, []);
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
+    clearStoredSession();
     setUser(null);
-    localStorage.removeItem('doribharat_user');
-  };
+  }, []);
 
   return (
     <Router>
