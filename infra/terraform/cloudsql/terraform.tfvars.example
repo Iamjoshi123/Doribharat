@@ -1,0 +1,7 @@
+project_id  = "my-gcp-project"
+region      = "asia-south1"
+vpc_network = "projects/my-gcp-project/global/networks/default"
+instance_name = "doribharat-postgres"
+db_name     = "doribharat"
+db_user     = "doribharat_app"
+db_password = "replace-with-strong-password"

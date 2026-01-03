@@ -1,0 +1,36 @@
+steps:
+  - id: cloud-sql-proxy
+    name: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.8.0
+    entrypoint: /cloud-sql-proxy
+    args:
+      - "--address=0.0.0.0"
+      - "--port=5432"
+      - "--private-ip"
+      - "${_INSTANCE_CONNECTION_NAME}"
+    waitFor:
+      - "-"
+
+  - id: install-and-migrate
+    name: gcr.io/cloud-builders/npm
+    entrypoint: bash
+    args:
+      - "-c"
+      - |
+          cd backend
+          npm install --no-progress
+          npx prisma migrate deploy
+    env:
+      - "DATABASE_URL=postgresql://${_DB_USER}:${_DB_PASSWORD}@127.0.0.1:5432/${_DB_NAME}?sslmode=disable"
+    waitFor:
+      - cloud-sql-proxy
+
+options:
+  substitution_option: ALLOW_LOOSE
+
+timeout: 1200s
+
+substitutions:
+  _INSTANCE_CONNECTION_NAME: project:region:instance
+  _DB_USER: doribharat_app
+  _DB_PASSWORD: change-me
+  _DB_NAME: doribharat
