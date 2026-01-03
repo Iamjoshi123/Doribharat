@@ -1,0 +1,76 @@
+// Prisma schema for Doribharat backend data model
+// Generated to support Cloud SQL PostgreSQL and Prisma migrations
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String    @id @default(uuid()) @db.Uuid
+  name        String    @db.VarChar(100)
+  imageUrl    String?   @db.Text
+  description String?   @db.Text
+  products    Product[]
+  createdAt   DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime  @updatedAt @db.Timestamptz(6)
+
+  @@unique([name])
+}
+
+model Product {
+  id             String    @id @default(uuid()) @db.Uuid
+  category       Category  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  categoryId     String    @db.Uuid
+  name           String    @db.VarChar(255)
+  slug           String    @unique @db.VarChar(255)
+  description    String?   @db.Text
+  specifications Json?
+  material       String?   @db.VarChar(100)
+  dimensions     String?   @db.VarChar(100)
+  sellingPrice   Decimal   @db.Decimal(10, 2)
+  retailPrice    Decimal?  @db.Decimal(10, 2)
+  stockQuantity  Int       @default(0)
+  images         String[]  @db.Text
+  flags          Json?
+  createdAt      DateTime  @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime  @updatedAt @db.Timestamptz(6)
+  orderItems     OrderItem[]
+
+  @@index([categoryId])
+}
+
+model Order {
+  id               String      @id @default(uuid()) @db.Uuid
+  orderNumber      String      @default(dbgenerated("concat('ORD-', substr(replace(gen_random_uuid()::text, '-', ''), 1, 12))")) @unique @db.VarChar(32)
+  customerName     String      @db.VarChar(255)
+  customerPhone    String?     @db.VarChar(30)
+  customerEmail    String?     @db.VarChar(255)
+  status           String      @default("pending") @db.VarChar(50)
+  totalAmount      Decimal     @db.Decimal(10, 2)
+  notes            String?     @db.Text
+  shippingAddress  Json?
+  createdAt        DateTime    @default(now()) @db.Timestamptz(6)
+  updatedAt        DateTime    @updatedAt @db.Timestamptz(6)
+  items            OrderItem[]
+
+  @@index([status])
+}
+
+model OrderItem {
+  id         String   @id @default(uuid()) @db.Uuid
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId    String   @db.Uuid
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  productId  String   @db.Uuid
+  quantity   Int      @default(1)
+  unitPrice  Decimal  @db.Decimal(10, 2)
+  createdAt  DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([orderId])
+  @@index([productId])
+}

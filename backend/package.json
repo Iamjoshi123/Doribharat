@@ -1,0 +1,14 @@
+{
+  "name": "doribharat-backend",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "prisma:migrate": "prisma migrate deploy",
+    "prisma:generate": "prisma generate",
+    "prisma:dev": "prisma migrate dev --name dev"
+  },
+  "devDependencies": {
+    "prisma": "5.19.0"
+  }
+}
