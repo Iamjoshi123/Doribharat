@@ -37,6 +37,10 @@ Copy `.env.example` to `.env` and set the values that apply to your environment.
 - Mount the Cloud SQL instance as a Unix domain socket and set `DATABASE_URL` to the socket-based string above.
 - Ensure the Cloud Run service account has `roles/cloudsql.client` and access to the database user password (Secret Manager recommended).
 
+## Provisioning options
+- **Terraform (preferred):** See `infra/terraform/cloudsql` for a private-IP Cloud SQL instance, database, and user.
+- **Manual SQL fallback:** If you create the instance manually (Console or `gcloud sql instances create`), run `sql/manual_setup.sql` with a superuser to create the `doribharat` database, `doribharat_app` user, and required extensions before applying migrations.
+
 ## Cloud Build migration job
 Use `backend/cloudbuild.migrate.yaml` to run migrations in CI:
 ```bash
