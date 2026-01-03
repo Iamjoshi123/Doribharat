@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "server": "tsx --tsconfig tsconfig.server.json server/index.ts"
+    "media:server": "node server/mediaServer.js"
   },
   "dependencies": {
     "@google-cloud/logging": "^12.6.0",

@@ -129,39 +129,50 @@
 - **Typography:** Modern Sans (Plus Jakarta Sans) for readability, Classic Serif (DM Serif) for heritage feel.
 - **Interactions:** Use Tailwind transitions for smooth scale and opacity changes on hover.
 
-## Backend Authentication (Cloud Run ready)
-- Express API with `/auth/login` and `/auth/refresh` issuing short-lived JWT access tokens (default 15 minutes) signed with a key pulled from Secret Manager.
-- Refresh tokens are opaque, rotation-checked against Postgres (`refresh_tokens` table). Each refresh invalidates the previous token; reuse is rejected.
-- Write endpoints are protected by middleware that enforces Bearer JWTs on `POST/PUT/PATCH/DELETE` (auth routes are excluded).
-- Admin users are stored in `admin_users`. On startup, the service bootstraps credentials from a Secret Manager entry (JSON array or `{ users: [...] }` with `username` and `password` or `passwordHash`). Passwords are stored hashed with bcrypt.
-- Schema is created automatically at runtime; the SQL is also available in `server/sql/schema.sql`.
-- Cloud SQL is consumed via `DATABASE_URL` (Postgres). Provide SSL params in the URL if required.
+---
 
-### Environment and Secret configuration (Cloud Run)
-- `DATABASE_URL` – Postgres connection string (Cloud SQL via connector or direct).
-- `JWT_SIGNING_KEY_SECRET` – Secret Manager name/path for the HMAC signing key used for JWT access tokens.
-- `ADMIN_USERS_SECRET` – Secret Manager name/path holding admin bootstrap JSON.
-- `ACCESS_TOKEN_TTL_SECONDS` (optional) – overrides access token TTL (default 900).
-- `REFRESH_TOKEN_TTL_HOURS` (optional) – refresh token lifetime (default 720 hours / 30 days).
-- `GCP_PROJECT` or `GOOGLE_CLOUD_PROJECT` – used to build secret paths when only secret names are provided.
-- In Cloud Run, mount `JWT_SIGNING_KEY_SECRET` and `ADMIN_USERS_SECRET` as runtime environment variables pointing to the Secret Manager entries. Grant the service account `Secret Manager Secret Accessor` and Cloud SQL permissions (or Cloud SQL connector) as needed.
+## Media Uploads with Google Cloud Storage
 
-### Running locally
-1. Populate the required secrets in Secret Manager or export them directly in the environment for local development.
-2. Install dependencies and start the API:
+The admin experience now signs short-lived upload URLs so product images are persisted as public GCS URLs inside `products.images`.
+
+### 1) Provision the bucket
+Ensure you are authenticated with `gcloud` for the correct project, then run:
+
+```bash
+# Create the bucket with uniform bucket-level access
+gcloud storage buckets create gs://doribharat-product-media --location=asia-south1 --uniform-bucket-level-access
+
+# Apply lifecycle rules (auto-delete temp uploads) and CORS for the admin origin
+gcloud storage buckets update gs://doribharat-product-media \
+  --lifecycle-file=infra/gcs-bucket.yaml \
+  --cors-file=infra/gcs-bucket.yaml
+
+# Allow public reads for product images
+gcloud storage buckets add-iam-policy-binding gs://doribharat-product-media \
+  --member=allUsers --role=roles/storage.objectViewer
+```
+
+The `infra/gcs-iam-policy.json` and `infra/gcs-bucket.yaml` files track the IAM, lifecycle, and CORS settings.
+
+### 2) Run the lightweight signing server
+The signing endpoint lives at `POST /media/sign-upload` and returns a `uploadUrl` + `publicUrl` pair.
+
+1. Export credentials (the private key should preserve newlines):
    ```bash
-   npm install
-   npm run server
+   export GCS_SERVICE_ACCOUNT_EMAIL="service-account@project.iam.gserviceaccount.com"
+   export GCS_SERVICE_ACCOUNT_KEY="$(cat key.json | jq -r .private_key)"
+   export GCS_BUCKET_NAME="doribharat-product-media"
+   export ADMIN_ORIGIN="http://localhost:5173"
    ```
-3. Login:
+2. Start the server:
    ```bash
-   curl -X POST http://localhost:8080/auth/login \
-     -H "Content-Type: application/json" \
-     -d '{"username":"admin","password":"your-password"}'
+   npm run media:server
    ```
-4. Refresh:
-   ```bash
-   curl -X POST http://localhost:8080/auth/refresh \
-     -H "Content-Type: application/json" \
-     -d '{"refreshToken":"<token-from-login>"}'
-   ```
+
+### 3) Wire the admin UI
+The admin modal now lets you upload from disk. Configure the UI to reach your signing server:
+```bash
+echo "VITE_MEDIA_API_BASE=http://localhost:4000" > .env.local
+```
+
+Uploads call `POST /media/sign-upload` to create a signed URL, upload the file directly to GCS, and persist the returned public URL in `products.images`.
