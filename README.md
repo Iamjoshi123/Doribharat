@@ -128,3 +128,40 @@
 - **Color Palette:** Rooted in Earth tones (#A62C2B, #3D5A2F).
 - **Typography:** Modern Sans (Plus Jakarta Sans) for readability, Classic Serif (DM Serif) for heritage feel.
 - **Interactions:** Use Tailwind transitions for smooth scale and opacity changes on hover.
+
+## Backend Authentication (Cloud Run ready)
+- Express API with `/auth/login` and `/auth/refresh` issuing short-lived JWT access tokens (default 15 minutes) signed with a key pulled from Secret Manager.
+- Refresh tokens are opaque, rotation-checked against Postgres (`refresh_tokens` table). Each refresh invalidates the previous token; reuse is rejected.
+- Write endpoints are protected by middleware that enforces Bearer JWTs on `POST/PUT/PATCH/DELETE` (auth routes are excluded).
+- Admin users are stored in `admin_users`. On startup, the service bootstraps credentials from a Secret Manager entry (JSON array or `{ users: [...] }` with `username` and `password` or `passwordHash`). Passwords are stored hashed with bcrypt.
+- Schema is created automatically at runtime; the SQL is also available in `server/sql/schema.sql`.
+- Cloud SQL is consumed via `DATABASE_URL` (Postgres). Provide SSL params in the URL if required.
+
+### Environment and Secret configuration (Cloud Run)
+- `DATABASE_URL` – Postgres connection string (Cloud SQL via connector or direct).
+- `JWT_SIGNING_KEY_SECRET` – Secret Manager name/path for the HMAC signing key used for JWT access tokens.
+- `ADMIN_USERS_SECRET` – Secret Manager name/path holding admin bootstrap JSON.
+- `ACCESS_TOKEN_TTL_SECONDS` (optional) – overrides access token TTL (default 900).
+- `REFRESH_TOKEN_TTL_HOURS` (optional) – refresh token lifetime (default 720 hours / 30 days).
+- `GCP_PROJECT` or `GOOGLE_CLOUD_PROJECT` – used to build secret paths when only secret names are provided.
+- In Cloud Run, mount `JWT_SIGNING_KEY_SECRET` and `ADMIN_USERS_SECRET` as runtime environment variables pointing to the Secret Manager entries. Grant the service account `Secret Manager Secret Accessor` and Cloud SQL permissions (or Cloud SQL connector) as needed.
+
+### Running locally
+1. Populate the required secrets in Secret Manager or export them directly in the environment for local development.
+2. Install dependencies and start the API:
+   ```bash
+   npm install
+   npm run server
+   ```
+3. Login:
+   ```bash
+   curl -X POST http://localhost:8080/auth/login \
+     -H "Content-Type: application/json" \
+     -d '{"username":"admin","password":"your-password"}'
+   ```
+4. Refresh:
+   ```bash
+   curl -X POST http://localhost:8080/auth/refresh \
+     -H "Content-Type: application/json" \
+     -d '{"refreshToken":"<token-from-login>"}'
+   ```
