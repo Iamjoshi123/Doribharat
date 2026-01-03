@@ -3,23 +3,27 @@
 FROM node:20-slim AS base
 WORKDIR /app
 
-ENV NODE_ENV=production
-
+# Step 1: Install ALL dependencies (including devDependencies like TypeScript)
 FROM base AS deps
 COPY package*.json ./
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+# We force production to false here so npm install gets 'tsc'
+RUN npm install
 
 FROM deps AS build
-ENV NODE_ENV=development
+# Step 2: Copy source and build
 COPY tsconfig.json tsconfig.server.json ./
 COPY server ./server
 RUN npm run build:server
 
 FROM deps AS prune
+# Step 3: Now remove devDependencies to keep the final image small
 RUN npm prune --omit=dev
 
 FROM base AS runner
 WORKDIR /app
+# Set production environment for the actual execution
+ENV NODE_ENV=production
+
 COPY --from=prune /app/node_modules ./node_modules
 COPY --from=build /app/dist ./dist
 COPY package.json ./package.json
