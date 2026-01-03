@@ -9,7 +9,7 @@ interface AdminProps {
   products: Product[];
   categories: Category[];
   homepageConfig: HomepageConfig;
-  onLogin: (user: string) => void;
+  onLogin: (username: string, password: string) => Promise<void>;
   onUpdateProducts: (products: Product[]) => void;
   onUpdateCategories: (categories: Category[]) => void;
   onUpdateHomepage: (config: HomepageConfig) => void;
@@ -47,12 +47,21 @@ const Admin: React.FC<AdminProps> = ({
     };
   }, [editingId, editingCatId]);
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === 'admin' && password === 'admin123') {
-      onLogin(username);
-    } else {
-      alert('Invalid credentials! Try admin/admin123');
+    setAuthError(null);
+    setIsLoggingIn(true);
+    try {
+      await onLogin(username, password);
+    } catch (error) {
+      console.error('Admin login failed', error);
+      setAuthError(
+        error instanceof Error
+          ? error.message
+          : 'Unable to authenticate. Please verify your credentials and try again.'
+      );
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
@@ -256,7 +265,14 @@ const Admin: React.FC<AdminProps> = ({
               onChange={e => setPassword(e.target.value)}
               className="w-full bg-stone-50 rounded-xl px-4 py-3 outline-none ring-[#A62C2B] focus:ring-1 border border-stone-100" 
             />
-            <button type="submit" className="w-full bg-[#A62C2B] text-white py-4 rounded-xl font-bold shadow-lg hover:bg-[#8e2525] transition-all transform hover:-translate-y-0.5">Access Dashboard</button>
+            {authError && <p className="text-[11px] text-red-500 font-semibold text-center">{authError}</p>}
+            <button 
+              type="submit" 
+              disabled={isLoggingIn}
+              className={`w-full bg-[#A62C2B] text-white py-4 rounded-xl font-bold shadow-lg hover:bg-[#8e2525] transition-all transform hover:-translate-y-0.5 ${isLoggingIn ? 'opacity-70 cursor-not-allowed' : ''}`}
+            >
+              {isLoggingIn ? 'Signing you in...' : 'Access Dashboard'}
+            </button>
           </form>
         </div>
       </div>

@@ -118,6 +118,12 @@
    - When a **Product** is created, the backend checks if the `category_id` exists.
    - When a **Category** is deleted, you must decide whether to cascade delete products or set their category to "Uncategorized" (Relational Integrity).
 
+### Cloud Run CORS (Frontend compatibility)
+- Set the deployed frontend origin (e.g., `https://doribharat.web.app` or your custom domain) as an environment variable (`FRONTEND_ORIGIN`/`CORS_ALLOWED_ORIGIN`) on the Cloud Run service.
+- Return `Access-Control-Allow-Origin: <frontend-origin>` and `Vary: Origin` from the API, and allow headers `Content-Type, Authorization, X-Frontend-Origin` to support authenticated admin calls.
+- On Cloud Run, you can inject the origin with:  
+  `gcloud run services update doribharat-api --set-env-vars FRONTEND_ORIGIN=https://doribharat.web.app`
+
 ## Style Principles
 - **Color Palette:** Rooted in Earth tones (#A62C2B, #3D5A2F).
 - **Typography:** Modern Sans (Plus Jakarta Sans) for readability, Classic Serif (DM Serif) for heritage feel.

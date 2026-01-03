@@ -1,0 +1,31 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    dir: backend
+    args: ['build', '-t', '${_IMAGE}', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '${_IMAGE}']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        gcloud run deploy ${_SERVICE} \
+          --image ${_IMAGE} \
+          --region ${_REGION} \
+          --allow-unauthenticated \
+          --platform managed \
+          --set-env-vars "GOOGLE_CLOUD_PROJECT=${PROJECT_ID},DB_INSTANCE=${_DB_INSTANCE},DB_USER=${_DB_USER},DB_PASS=${_DB_PASS},DB_NAME=${_DB_NAME},CLOUD_SQL_CONNECTION_NAME=${_CLOUD_SQL_CONNECTION_NAME},GCS_BUCKET=${_GCS_BUCKET}"
+images:
+  - '${_IMAGE}'
+substitutions:
+  _IMAGE: 'gcr.io/$PROJECT_ID/backend'
+  _SERVICE: 'backend-service'
+  _REGION: 'us-central1'
+  _DB_INSTANCE: ''
+  _DB_USER: ''
+  _DB_PASS: ''
+  _DB_NAME: ''
+  _CLOUD_SQL_CONNECTION_NAME: ''
+  _GCS_BUCKET: ''
