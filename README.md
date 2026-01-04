@@ -135,6 +135,12 @@
 
 The admin experience now signs short-lived upload URLs so product images are persisted as public GCS URLs inside `products.images`.
 
+## Environment files
+
+- **Frontend (Vite):** Copy `.env.local.example` to `.env.local` and adjust `VITE_*` + `GEMINI_API_KEY` values.
+- **Backend API:** Copy `backend/.env.example` to `backend/.env` (or set the variables in Cloud Run/Secret Manager).
+- **Node API & media signer (`server/`):** Copy `server/.env.example` to `server/.env` when running locally; set the same keys in your runtime environment for deployments.
+
 ### 1) Provision the bucket
 Ensure you are authenticated with `gcloud` for the correct project, then run:
 
