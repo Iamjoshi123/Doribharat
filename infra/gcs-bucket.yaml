@@ -1,4 +1,4 @@
-name: doribharat-product-media
+name:  photo-bucket-doribharat
 location: asia-south1
 storageClass: STANDARD
 iamConfiguration:
