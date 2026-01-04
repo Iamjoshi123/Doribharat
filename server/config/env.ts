@@ -10,7 +10,7 @@ const required = (value: string | undefined, name: string) => {
 
 export const env = {
   port: numberFromEnv(process.env.PORT, 8080),
-  databaseUrl: required(process.env.DATABASE_URL, "DATABASE_URL"),
+  databaseUrl: required(process.env.DATABASE_URL, "postgresql://postgres:z#^K\8l;-ovSRbe&@/postgres?host=/cloudsql/gen-lang-client-0008305956:us-central1:doribharat-prod"),
   jwtSigningKeySecret: required(process.env.JWT_SIGNING_KEY_SECRET, "JWT_SIGNING_KEY_SECRET"),
   adminUsersSecret: required(process.env.ADMIN_USERS_SECRET, "ADMIN_USERS_SECRET"),
   accessTokenTtlSeconds: numberFromEnv(process.env.ACCESS_TOKEN_TTL_SECONDS, 900), // 15 minutes
