@@ -14,6 +14,24 @@ echo "This script will deploy the entire application to Google Cloud."
 echo "Running in project: $(gcloud config get-value project)"
 read -p "Press Enter to continue or Ctrl+C to cancel..."
 
+# 0. Robust Authentication Check & Fix
+echo "--> Checking Authentication Status..."
+ADC_FILE="$HOME/.config/gcloud/application_default_credentials.json"
+
+if [ ! -f "$ADC_FILE" ]; then
+  echo "========================================================"
+  echo "WARNING: Application Default Credentials (ADC) not found!"
+  echo "Terraform requires these credentials to be stable."
+  echo "Launching authentication flow... PLEASE FOLLOW THE LINK BELOW."
+  echo "========================================================"
+  gcloud auth application-default login
+fi
+
+# CRITICAL: Force Terraform to use the file, bypassing the flaky metadata server
+export GOOGLE_APPLICATION_CREDENTIALS="$ADC_FILE"
+echo "--> Auth Configured: Using explicit credentials from $ADC_FILE"
+echo "--> Project: $(gcloud config get-value project)"
+
 # 1. Enable APIs
 echo "--> Enabling APIs..."
 gcloud services enable \
@@ -63,7 +81,7 @@ db_password = "$DB_PASS"
 vpc_network = "projects/$(gcloud config get-value project)/global/networks/default"
 EOF
 
-terraform init
+terraform init -reconfigure
 terraform apply -auto-approve
 
 # Get DB connection name
