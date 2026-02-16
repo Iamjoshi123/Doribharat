@@ -27,6 +27,20 @@ if [ ! -f "$ADC_FILE" ]; then
   gcloud auth application-default login
 fi
 
+# RE-CHECK: Did the file actually get created?
+if [ ! -f "$ADC_FILE" ]; then
+  echo "========================================================"
+  echo "❌ CRITICAL AUTH ERROR: Credentials file not found!"
+  echo "Expected path: $ADC_FILE"
+  echo "The 'gcloud auth application-default login' command failed or was cancelled."
+  echo "Terraform CANNOT proceed without this file."
+  echo ""
+  echo "Please run this command manually and complete the login:"
+  echo "  gcloud auth application-default login"
+  echo "========================================================"
+  exit 1
+fi
+
 # CRITICAL: Force Terraform to use the file, bypassing the flaky metadata server
 export GOOGLE_APPLICATION_CREDENTIALS="$ADC_FILE"
 echo "--> Auth Configured: Using explicit credentials from $ADC_FILE"
