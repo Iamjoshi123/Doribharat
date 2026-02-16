@@ -15,16 +15,34 @@ echo "Running in project: $(gcloud config get-value project)"
 read -p "Press Enter to continue or Ctrl+C to cancel..."
 
 # 0. Robust Authentication Check & Fix
+# 0. Robust Authentication Check & Fix
 echo "--> Checking Authentication Status..."
-ADC_FILE="$HOME/.config/gcloud/application_default_credentials.json"
 
+# DEFINITION: Where we WANT the credentials to live
+ADC_FILE="$HOME/.config/gcloud/application_default_credentials.json"
+mkdir -p $(dirname "$ADC_FILE")
+
+# CRITICAL: Export this EARLY so 'gcloud auth application-default login' saves it here!
+export GOOGLE_APPLICATION_CREDENTIALS="$ADC_FILE"
+echo "--> Configured Credential Path: $ADC_FILE"
+
+# CHECK 1: gcloud CLI (For running gcloud commands)
+if ! gcloud auth print-access-token >/dev/null 2>&1; then
+  echo "========================================================"
+  echo "⚠️  GCLOUD CLI NOT AUTHENTICATED"
+  echo "We need to log you in to run 'gcloud' commands."
+  echo "========================================================"
+  gcloud auth login --quiet --no-launch-browser
+fi
+
+# CHECK 2: Application Default Credentials (For Terraform)
 if [ ! -f "$ADC_FILE" ]; then
   echo "========================================================"
-  echo "WARNING: Application Default Credentials (ADC) not found!"
-  echo "Terraform requires these credentials to be stable."
-  echo "Launching authentication flow... PLEASE FOLLOW THE LINK BELOW."
+  echo "⚠️  ADC CREDENTIALS MISSING"
+  echo "Terraform needs specific credentials to provision resources."
+  echo "Launching authentication flow..."
   echo "========================================================"
-  gcloud auth application-default login
+  gcloud auth application-default login --quiet --no-launch-browser
 fi
 
 # RE-CHECK: Did the file actually get created?
@@ -32,17 +50,15 @@ if [ ! -f "$ADC_FILE" ]; then
   echo "========================================================"
   echo "❌ CRITICAL AUTH ERROR: Credentials file not found!"
   echo "Expected path: $ADC_FILE"
-  echo "The 'gcloud auth application-default login' command failed or was cancelled."
-  echo "Terraform CANNOT proceed without this file."
-  echo ""
-  echo "Please run this command manually and complete the login:"
+  echo "The login command failed or wrote to a weird location."
+  echo "Please run this MANUALLY:"
+  echo "  export GOOGLE_APPLICATION_CREDENTIALS=$ADC_FILE"
   echo "  gcloud auth application-default login"
   echo "========================================================"
   exit 1
 fi
 
-# CRITICAL: Force Terraform to use the file, bypassing the flaky metadata server
-export GOOGLE_APPLICATION_CREDENTIALS="$ADC_FILE"
+echo "--> Auth Configured: Using explicit credentials from $ADC_FILE"
 echo "--> Auth Configured: Using explicit credentials from $ADC_FILE"
 echo "--> Project: $(gcloud config get-value project)"
 
