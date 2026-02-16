@@ -60,7 +60,7 @@ resource "google_sql_database_instance" "postgres" {
     deletion_protection_enabled = var.deletion_protection
 
     ip_configuration {
-      ipv4_enabled                                  = false
+      ipv4_enabled                                  = true
       private_network                               = var.vpc_network
       enable_private_path_for_google_cloud_services = true
     }

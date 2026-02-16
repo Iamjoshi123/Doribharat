@@ -8,9 +8,24 @@ const app = express();
 
 app.use(express.json());
 app.use("/auth", authRouter);
+
+// Serve static frontend files if present
+const publicDir = env.publicDir || "./public";
+app.use(express.static(publicDir));
+
 app.use(protectWrites);
 
 app.get("/healthz", (_req, res) => res.json({ status: "ok" }));
+
+// SPA fallback for non-API routes
+app.get("*", (req, res, next) => {
+  if (req.path.startsWith("/api") || req.path.startsWith("/auth")) {
+    return next();
+  }
+  res.sendFile("index.html", { root: publicDir }, (err) => {
+    if (err) next();
+  });
+});
 
 const start = async () => {
   try {

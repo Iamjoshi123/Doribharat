@@ -1,33 +1,36 @@
 # syntax=docker/dockerfile:1
 
-FROM node:20-slim AS base
-WORKDIR /app
-
-# Step 1: Install ALL dependencies (including devDependencies like TypeScript)
-FROM base AS deps
-ENV NODE_ENV=development
+# --- Stage 1: Build Frontend (Vite) ---
+FROM node:20-slim AS frontend-builder
+WORKDIR /app/frontend
+# Copy root package.json for potential shared deps, but mostly focused on frontend
 COPY package*.json ./
-# Ensure devDependencies are installed so TypeScript is available for the build
-RUN npm install --production=false
+RUN npm install
+COPY . .
+# Build the React app (output usually to dist/)
+RUN npm run build
 
-FROM deps AS build
-# Step 2: Copy source and build
-COPY tsconfig.json tsconfig.server.json ./
+# --- Stage 2: Build Backend ---
+FROM node:20-slim AS backend-builder
+WORKDIR /app/backend
+COPY package*.json tsconfig.json tsconfig.server.json ./
 COPY server ./server
+RUN npm install
 RUN npm run build:server
-
-FROM deps AS prune
-# Step 3: Now remove devDependencies to keep the final image small
 RUN npm prune --omit=dev
 
-FROM base AS runner
+# --- Stage 3: Runner ---
+FROM node:20-slim AS runner
 WORKDIR /app
-# Set production environment for the actual execution
 ENV NODE_ENV=production
 
-COPY --from=prune /app/node_modules ./node_modules
-COPY --from=build /app/dist ./dist
-COPY package.json ./package.json
+# Copy backend dependencies and build
+COPY --from=backend-builder /app/backend/node_modules ./node_modules
+COPY --from=backend-builder /app/backend/dist ./dist
+COPY --from=backend-builder /app/backend/package.json ./package.json
+
+# Copy frontend build to a public directory served by Express
+COPY --from=frontend-builder /app/frontend/dist ./public
 
 USER node
 EXPOSE 8080
