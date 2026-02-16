@@ -84,7 +84,6 @@ if ! gcloud sql instances describe $DB_INSTANCE_NAME >/dev/null 2>&1; then
     --root-password=$DB_PASSWORD \
     --network=default \
     --no-assign-ip \
-    --edition=ENTERPRISE_SANDBOX \
     --quiet
 else
   echo "    DB Instance '$DB_INSTANCE_NAME' already exists."
