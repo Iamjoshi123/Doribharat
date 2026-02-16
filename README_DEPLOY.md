@@ -1,24 +1,32 @@
 # 🚀 Doribharat Fresh Deployment Guide
 
-You requested a clean slate. Here is the **Single Button** solution.
+> **Goal**: Deploy the entire app (Database + Backend) with a single script.
 
 This automated script will:
-1.  Enable all necessary APIs.
-2.  Set up the Network and Database (correctly).
-3.  **Automatically Fix** the permissions error you saw (Secret Manager Access).
-4.  Deploy the App and run Migrations.
+1.  Enable all necessary Google Cloud APIs.
+2.  Set up the Network and Database (Postgres).
+3.  **Automatically Fix** permissions errors (Secret Manager, Cloud SQL).
+4.  Deploy the Backend to Cloud Run.
+5.  Run Database Migrations.
 
 ---
 
-## Step 1: Login (Do not skip)
-Run this command in your terminal. If asked, click the link and authorize.
+## Step 1: Login (Critical)
+Run this command. If asked, click the link and authorize.
 
 ```bash
 gcloud auth login --no-launch-browser
 ```
 
-## Step 2: Run the Fresh Deploy Script
-Copy and run this single command:
+## Step 2: Get Latest Code
+**IMPORTANT**: Ensure you have the latest fixes.
+
+```bash
+git pull
+```
+
+## Step 3: Run the Fresh Deploy Script
+Copy and run this command:
 
 ```bash
 chmod +x scripts/deploy_fresh.sh
@@ -27,14 +35,27 @@ chmod +x scripts/deploy_fresh.sh
 
 *(This will take about 10-15 minutes because creating a database takes time. Grab a coffee ☕)*
 
-## Step 3: Done
-At the end, the script will print your **Website URL**.
+---
+
+## Step 4: Verification
+At the end, the script will print your **Service URL**.
+Open that URL in your browser. You should see `{"status":"ok"}` or the app interface.
 
 ---
 
-### What if it fails?
-If something weird happens, just run:
-```bash
-./scripts/nuke.sh
-```
-And then try **Step 2** again.
+### ⚠️ Troubleshooting
+If the script fails or gets stuck:
+
+1.  **"Container failed to start"**:
+    - Run `git pull` again. We fixed a bug in the Dockerfile.
+    - Run `./scripts/deploy_fresh.sh` again.
+
+2.  **"Already exists" errors**:
+    - These are fine. The script is smart enough to skip what's already done.
+
+3.  **Total Reset (Nuclear Option)**:
+    - If everything is broken and you want to start over:
+    ```bash
+    ./scripts/nuke.sh
+    ```
+    - Then run `deploy_fresh.sh` again.
