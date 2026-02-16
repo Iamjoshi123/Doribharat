@@ -71,6 +71,22 @@ fi
 
 # 3. Infrastructure (Terraform)
 echo "--> Provisioning Database (Terraform)..."
+
+# CLEANUP: Remove interfering VPC peering from previous failed runs
+# Terraform fails if a peering exists but the local state is lost (Error code 9)
+echo "--> Checking for existing VPC peering complications..."
+if gcloud services vpc-peerings list --network=default --format="value(peerNetwork)" | grep -q "servicenetworking-googleapis-com"; then
+  echo "    [CLEANUP] Found existing VPC peering. Deleting to avoid Terraform conflicts..."
+  gcloud services vpc-peerings delete servicenetworking-googleapis-com --network=default --quiet || echo "    Warning: Could not delete peering, continuing..."
+  
+  # Also clean up old reserved IP ranges to avoid accumulation
+  echo "    [CLEANUP] Removing old Cloud SQL IP ranges..."
+  OLD_RANGES=$(gcloud compute addresses list --global --filter="name:doribharat-postgres-* AND purpose:VPC_PEERING" --format="value(name)")
+  if [ -n "$OLD_RANGES" ]; then
+     echo "$OLD_RANGES" | xargs -r gcloud compute addresses delete --global --quiet
+  fi
+fi
+
 cd infra/terraform/cloudsql
 # Create terraform.tfvars
 cat > terraform.tfvars <<EOF
