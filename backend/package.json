@@ -4,11 +4,23 @@
   "private": true,
   "license": "MIT",
   "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "ts-node src/index.ts",
     "prisma:migrate": "prisma migrate deploy",
     "prisma:generate": "prisma generate",
     "prisma:dev": "prisma migrate dev --name dev"
   },
+  "dependencies": {
+    "fastify": "^4.26.1",
+    "@fastify/cors": "^9.0.1",
+    "dotenv": "^16.4.5",
+    "@prisma/client": "5.19.0"
+  },
   "devDependencies": {
-    "prisma": "5.19.0"
+    "prisma": "5.19.0",
+    "typescript": "^5.3.3",
+    "ts-node": "^10.9.2",
+    "@types/node": "^20.11.24"
   }
 }
