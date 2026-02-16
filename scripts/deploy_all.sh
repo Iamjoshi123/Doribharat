@@ -16,6 +16,7 @@ read -p "Press Enter to continue or Ctrl+C to cancel..."
 
 # 1. Enable APIs
 echo "--> Enabling APIs..."
+gcloud services enable \
   serviceusage.googleapis.com \
   cloudresourcemanager.googleapis.com \
   compute.googleapis.com \
