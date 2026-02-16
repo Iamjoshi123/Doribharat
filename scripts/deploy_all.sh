@@ -81,9 +81,12 @@ if gcloud services vpc-peerings list --network=default --format="value(peerNetwo
   
   # Also clean up old reserved IP ranges to avoid accumulation
   echo "    [CLEANUP] Removing old Cloud SQL IP ranges..."
-  OLD_RANGES=$(gcloud compute addresses list --global --filter="name:doribharat-postgres-* AND purpose:VPC_PEERING" --format="value(name)")
+  OLD_RANGES=$(gcloud compute addresses list --global --filter="name:doribharat-postgres-*" --format="value(name)")
   if [ -n "$OLD_RANGES" ]; then
+     echo "    Found orphaned ranges: $OLD_RANGES"
      echo "$OLD_RANGES" | xargs -r gcloud compute addresses delete --global --quiet
+  else
+     echo "    No orphaned ranges found."
   fi
 fi
 
