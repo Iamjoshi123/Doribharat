@@ -124,36 +124,35 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
 # ----------------------------------------------------------------------------------------
 # 3. DEPLOYMENT
 # ----------------------------------------------------------------------------------------
-echo "--> [5/7] Deploying to Cloud Run..."
+echo "--> [5/6] Deploying App..."
 
-# DB Connection Name
 DB_CONN_NAME="${PROJECT_ID}:${REGION}:${DB_INSTANCE_NAME}"
+JWT_SECRET=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9')
 
-echo "    Building and Deploying container..."
+# FIXED: Env vars to match backend/src/config/env.ts
 gcloud run deploy doribharat-api \
   --source . \
   --region $REGION \
   --allow-unauthenticated \
-  --set-env-vars DB_HOST="/cloudsql/${DB_CONN_NAME}",DB_USER="${DB_USER}",DB_NAME="${DB_NAME}",GCS_BUCKET_NAME="doribharat-media-${PROJECT_ID}" \
-  --set-secrets DB_PASSWORD=db-password:latest,ADMIN_USERS_SECRET=admin-users-secret:latest \
+  --set-env-vars DB_HOST="/cloudsql/${DB_CONN_NAME}",DB_USER="${DB_USER}",DB_NAME="${DB_NAME}",CLOUD_SQL_CONNECTION_NAME="${DB_CONN_NAME}",JWT_SIGNING_KEY_SECRET="${JWT_SECRET}",GCS_BUCKET_NAME="doribharat-media-${PROJECT_ID}" \
+  --set-secrets DB_PASS=db-password:latest,ADMIN_USERS_SECRET=admin-users-secret:latest \
   --add-cloudsql-instances ${DB_CONN_NAME} \
   --quiet
 
 # ----------------------------------------------------------------------------------------
 # 4. MIGRATION
 # ----------------------------------------------------------------------------------------
-echo "--> [6/7] Running Database Migrations..."
+echo "--> [6/6] Running Migrations..."
 # We use a trick: create a temporary Job to run the migration
+# Migration job also needs these envs to connect
 gcloud run jobs deploy doribharat-migrate \
   --source . \
   --region $REGION \
   --command "npx","prisma","migrate","deploy" \
-  --set-env-vars DB_HOST="/cloudsql/${DB_CONN_NAME}",DB_USER="${DB_USER}",DB_NAME="${DB_NAME}" \
-  --set-secrets DB_PASSWORD=db-password:latest \
+  --set-env-vars DB_HOST="/cloudsql/${DB_CONN_NAME}",DB_USER="${DB_USER}",DB_NAME="${DB_NAME}",CLOUD_SQL_CONNECTION_NAME="${DB_CONN_NAME}",JWT_SIGNING_KEY_SECRET="${JWT_SECRET}" \
+  --set-secrets DB_PASS=db-password:latest \
   --add-cloudsql-instances ${DB_CONN_NAME} \
   --quiet
-
-echo "    Executing Migration Job..."
 gcloud run jobs execute doribharat-migrate --region $REGION --wait
 
 echo "========================================================================================"
