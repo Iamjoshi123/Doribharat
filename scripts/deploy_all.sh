@@ -74,23 +74,37 @@ echo "--> Provisioning Database (Terraform)..."
 
 # CLEANUP: Remove interfering VPC peering from previous failed runs
 # Terraform fails if a peering exists but the local state is lost (Error code 9)
-echo "--> Checking for existing VPC peering complications..."
-if gcloud services vpc-peerings list --network=default --format="value(peerNetwork)" | grep -q "servicenetworking-googleapis-com"; then
-  echo "    [CLEANUP] Found existing VPC peering. Deleting to avoid Terraform conflicts..."
-  gcloud services vpc-peerings delete servicenetworking-googleapis-com --network=default --quiet || echo "    Warning: Could not delete peering, continuing..."
+# FORCE CLEANUP: Attempt to delete conflicting network resources unconditionally
+# We don't check "if exists" because grep can be flaky. Just try to delete.
+echo "--> [CLEANUP] Ensuring clean network state..."
+
+# 1. Delete Peering (The connection to Google Services)
+echo "    > Detaching old VPC peering (servicenetworking-googleapis-com)..."
+gcloud services vpc-peerings delete servicenetworking-googleapis-com --network=default --quiet || echo "      (Peering not found or already deleted - This is OK)"
+
+# Wait for potential lingering operations
+sleep 5
+
+# 2. Delete Orphaned IP Ranges (The address blocks)
+echo "    > Checking for orphaned Cloud SQL IP ranges..."
+# Find ANY range starting with "doribharat-postgres-"
+OLD_RANGES=$(gcloud compute addresses list --global --filter="name:doribharat-postgres-*" --format="value(name)")
+
+if [ -n "$OLD_RANGES" ]; then
+   echo "      [CLEANUP] Found orphaned ranges: $OLD_RANGES"
+   # Delete them all
+   echo "$OLD_RANGES" | xargs -r gcloud compute addresses delete --global --quiet
+   echo "      [CLEANUP] Waiting 10 seconds for deletion to propagate..."
+   sleep 10
+else
+   echo "      No orphaned ranges found. Clean."
 fi
 
-# ALWAYS clean up old reserved IP ranges to avoid accumulation, even if peering is gone
-echo "--> Checking for orphaned Cloud SQL IP ranges..."
-OLD_RANGES=$(gcloud compute addresses list --global --filter="name:doribharat-postgres-*" --format="value(name)")
-if [ -n "$OLD_RANGES" ]; then
-   echo "    [CLEANUP] Found orphaned ranges: $OLD_RANGES"
-   echo "$OLD_RANGES" | xargs -r gcloud compute addresses delete --global --quiet
-   echo "    [CLEANUP] Waiting 5 seconds for propagation..."
-   sleep 5
-else
-   echo "    No orphaned ranges found."
-fi
+# 3. Nuke local Terraform state to force fresh initialization
+echo "    > Removing local Terraform state to prevent conflicts..."
+rm -rf infra/terraform/cloudsql/.terraform
+rm -f infra/terraform/cloudsql/terraform.tfstate*
+rm -f infra/terraform/cloudsql/.terraform.lock.hcl
 
 cd infra/terraform/cloudsql
 # Create terraform.tfvars
