@@ -1,20 +1,29 @@
-import Fastify, { FastifyInstance } from 'fastify';
+import express, { Express } from 'express';
+import cors from 'cors';
 import { AppConfig } from './config/env';
+import ordersRouter from './routes/orders';
 
-export const createServer = (config: AppConfig): FastifyInstance => {
-  const app = Fastify({
-    logger: true
+export const createServer = (config: AppConfig): Express => {
+  const app = express();
+
+  app.use(cors());
+  app.use(express.json());
+
+  app.get('/health', async (_req, res) => {
+    res.json({ status: 'ok' });
   });
 
-  app.get('/health', async () => ({ status: 'ok' }));
+  app.get('/config', async (_req, res) => {
+    res.json({
+      project: config.googleCloudProject,
+      dbInstance: config.dbInstance,
+      dbName: config.dbName,
+      cloudSqlConnectionName: config.cloudSqlConnectionName,
+      gcsBucket: config.gcsBucket
+    });
+  });
 
-  app.get('/config', async () => ({
-    project: config.googleCloudProject,
-    dbInstance: config.dbInstance,
-    dbName: config.dbName,
-    cloudSqlConnectionName: config.cloudSqlConnectionName,
-    gcsBucket: config.gcsBucket
-  }));
+  app.use('/api', ordersRouter);
 
   return app;
 };
