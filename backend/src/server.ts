@@ -34,7 +34,19 @@ export const createServer = (config: AppConfig): Express => {
     });
   });
 
+  // Mount API routes
   app.use('/api', ordersRouter);
+
+  // Catch-all 404 handler
+  app.use((req, res) => {
+    console.log(`404 Not Found: ${req.method} ${req.path}`);
+    res.status(404).json({
+      error: 'Route not found',
+      path: req.path,
+      method: req.method,
+      note: 'If you see this, the new code IS running.'
+    });
+  });
 
   return app;
 };
