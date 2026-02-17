@@ -2,10 +2,23 @@ import { Logging } from '@google-cloud/logging';
 
 type Severity = 'DEBUG' | 'INFO' | 'NOTICE' | 'WARNING' | 'ERROR' | 'CRITICAL' | 'ALERT' | 'EMERGENCY';
 
-const logging = new Logging({ projectId: process.env.GCLOUD_PROJECT });
-const log = logging.log(process.env.CLOUD_LOG_NAME ?? 'orders-events');
+let log: any = null;
+
+try {
+  if (process.env.DISABLE_GCP_SERVICES !== 'true') {
+    const logging = new Logging({ projectId: process.env.GCLOUD_PROJECT });
+    log = logging.log(process.env.CLOUD_LOG_NAME ?? 'orders-events');
+  }
+} catch (err) {
+  console.warn('Failed to initialize Google Cloud Logging, falling back to console', err);
+}
 
 async function writeLog(severity: Severity, message: string, data?: Record<string, unknown>) {
+  if (!log) {
+    console.log(`[${severity}] ${message}`, data ? JSON.stringify(data) : '');
+    return;
+  }
+
   const entry = log.entry({
     severity,
     resource: { type: 'global' },
