@@ -7,6 +7,11 @@ RUN npm ci
 
 COPY tsconfig.json ./
 COPY src ./src
+COPY prisma ./prisma
+
+# Generate Prisma Client
+RUN npx prisma generate
+
 RUN npm run build
 RUN npm prune --omit=dev
 
