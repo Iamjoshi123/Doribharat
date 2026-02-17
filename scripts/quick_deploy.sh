@@ -40,7 +40,7 @@ gcloud run deploy doribharat-api \
   --allow-unauthenticated \
   --set-env-vars DB_HOST="/cloudsql/${DB_CONN_NAME}",DB_USER="${DB_USER}",DB_NAME="${DB_NAME}",CLOUD_SQL_CONNECTION_NAME="${DB_CONN_NAME}",GCS_BUCKET_NAME="doribharat-media-${PROJECT_ID}" \
   --set-secrets DB_PASSWORD=db-password:latest,ADMIN_USERS_SECRET=admin-users-secret:latest,JWT_SIGNING_KEY_SECRET=jwt-secret:latest \
-  --set-build-vars GEMINI_API_KEY="${GEMINI_API_KEY}" \
+  --set-build-env-vars GEMINI_API_KEY="${GEMINI_API_KEY}" \
   --add-cloudsql-instances ${DB_CONN_NAME} \
   --quiet
 
