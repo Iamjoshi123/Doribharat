@@ -11,12 +11,15 @@ steps:
     args:
       - -c
       - |
+        # Generate random JWT Secret on the fly if not provided
+        JWT_SECRET=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9')
+        
         gcloud run deploy ${_SERVICE} \
           --image ${_IMAGE} \
           --region ${_REGION} \
           --allow-unauthenticated \
           --platform managed \
-          --set-env-vars "GOOGLE_CLOUD_PROJECT=${PROJECT_ID},DB_INSTANCE=${_DB_INSTANCE},DB_USER=${_DB_USER},DB_PASS=${_DB_PASS},DB_NAME=${_DB_NAME},CLOUD_SQL_CONNECTION_NAME=${_CLOUD_SQL_CONNECTION_NAME},GCS_BUCKET=${_GCS_BUCKET}"
+          --set-env-vars "GOOGLE_CLOUD_PROJECT=${PROJECT_ID},DB_INSTANCE=${_DB_INSTANCE},DB_USER=${_DB_USER},DB_PASS=${_DB_PASS},DB_NAME=${_DB_NAME},CLOUD_SQL_CONNECTION_NAME=${_CLOUD_SQL_CONNECTION_NAME},GCS_BUCKET=${_GCS_BUCKET},JWT_SIGNING_KEY_SECRET=${JWT_SECRET},ADMIN_USERS_SECRET=${_ADMIN_USERS_SECRET}"
 images:
   - '${_IMAGE}'
 substitutions:
