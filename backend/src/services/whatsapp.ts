@@ -1,6 +1,6 @@
 import { PubSub } from '@google-cloud/pubsub';
-import { logError, logInfo, logWarning } from '../lib/logging.js';
-import { ContactDetails, LineItem } from './types.js';
+import { logError, logInfo, logWarning } from '../lib/logging';
+import { ContactDetails, LineItem } from './types';
 
 export interface WhatsappMessageRequest {
   orderId: number;

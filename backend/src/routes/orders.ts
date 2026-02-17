@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import { withClient } from '../lib/db.js';
-import { logError, logInfo, logWarning } from '../lib/logging.js';
-import { ContactDetails, LineItem } from '../services/types.js';
-import { enqueueWhatsappWebhook } from '../services/whatsapp.js';
+import { withClient } from '../lib/db';
+import { logError, logInfo, logWarning } from '../lib/logging';
+import { ContactDetails, LineItem } from '../services/types';
+import { enqueueWhatsappWebhook } from '../services/whatsapp';
 
 interface OrderRow {
   id: number;

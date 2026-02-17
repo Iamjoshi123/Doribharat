@@ -17,6 +17,7 @@ const pool = new Pool({
 });
 
 export async function withClient<T>(fn: (client: PoolClient) => Promise<T>): Promise<T> {
+  // console.log('Acquiring DB client...'); // Debug log
   const client = await pool.connect();
   try {
     return await fn(client);
