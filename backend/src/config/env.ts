@@ -35,7 +35,7 @@ export const loadConfig = (): AppConfig => {
 
     // Database Config
     dbUser: required(process.env.DB_USER, "DB_USER"),
-    dbPass: required(process.env.DB_PASS, "DB_PASS"),
+    dbPass: required(process.env.DB_PASSWORD, "DB_PASSWORD"),
     dbName: required(process.env.DB_NAME, "DB_NAME"),
     cloudSqlConnectionName: required(process.env.CLOUD_SQL_CONNECTION_NAME, "CLOUD_SQL_CONNECTION_NAME"),
 

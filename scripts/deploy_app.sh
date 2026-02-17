@@ -25,13 +25,14 @@ echo -e "${YELLOW}Deploying to Cloud Run...${NC}"
 # Retrieve secrets references
 SECRET_DB_PASSWORD="db-password"
 SECRET_ADMIN="admin-users-secret"
+SECRET_JWT="jwt-signing-secret"
 
 gcloud run deploy $SERVICE_NAME \
     --image gcr.io/$PROJECT_ID/$SERVICE_NAME \
     --region $REGION \
     --allow-unauthenticated \
-    --set-env-vars="DB_HOST=/cloudsql/$DB_CONNECTION_NAME,DB_USER=doribharat_app,DB_NAME=doribharat,GCS_BUCKET_NAME=${PROJECT_ID}-media" \
-    --set-secrets="DB_PASSWORD=${SECRET_DB_PASSWORD}:latest,ADMIN_USERS_SECRET=${SECRET_ADMIN}:latest" \
+    --set-env-vars="DB_HOST=/cloudsql/$DB_CONNECTION_NAME,DB_USER=doribharat_app,DB_NAME=doribharat,GCS_BUCKET_NAME=${PROJECT_ID}-media,CLOUD_SQL_CONNECTION_NAME=$DB_CONNECTION_NAME,INSTANCE_CONNECTION_NAME=$DB_CONNECTION_NAME" \
+    --set-secrets="DB_PASSWORD=${SECRET_DB_PASSWORD}:latest,ADMIN_USERS_SECRET=${SECRET_ADMIN}:latest,JWT_SIGNING_KEY_SECRET=${SECRET_JWT}:latest" \
     --add-cloudsql-instances=$DB_CONNECTION_NAME \
     --min-instances=0 \
     --max-instances=2 \

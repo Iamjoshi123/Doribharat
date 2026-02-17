@@ -50,6 +50,17 @@ else
     echo -e "${GREEN}Secret '$SECRET_ADMIN' already exists.${NC}"
 fi
 
+SECRET_JWT="jwt-signing-secret"
+if ! gcloud secrets describe $SECRET_JWT &>/dev/null; then
+    echo -e "${YELLOW}Creating JWT Signing Secret...${NC}"
+    # Generate a random 32-char string
+    JWT_VAL=$(openssl rand -base64 32)
+    printf "$JWT_VAL" | gcloud secrets create $SECRET_JWT --data-file=-
+    echo -e "${GREEN}Secret '$SECRET_JWT' created.${NC}"
+else
+    echo -e "${GREEN}Secret '$SECRET_JWT' already exists.${NC}"
+fi
+
 # 3. Create Cloud Storage Bucket
 echo -e "${YELLOW}Creating Cloud Storage Bucket...${NC}"
 if ! gsutil ls -b gs://$GCS_BUCKET_NAME &>/dev/null; then
