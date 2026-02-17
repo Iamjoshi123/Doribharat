@@ -61,6 +61,16 @@ else
     echo -e "${GREEN}Secret '$SECRET_JWT' already exists.${NC}"
 fi
 
+# Grant Access to Secrets
+echo -e "${YELLOW}Granting Secret Accessor role to Default Compute Service Account...${NC}"
+PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format='value(projectNumber)')
+SERVICE_ACCOUNT="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
+
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+    --member="serviceAccount:${SERVICE_ACCOUNT}" \
+    --role="roles/secretmanager.secretAccessor"
+
+
 # 3. Create Cloud Storage Bucket
 echo -e "${YELLOW}Creating Cloud Storage Bucket...${NC}"
 if ! gsutil ls -b gs://$GCS_BUCKET_NAME &>/dev/null; then
