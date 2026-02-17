@@ -47,15 +47,16 @@ Open that URL in your browser. You should see `{"status":"ok"}` or the app inter
 If the script fails or gets stuck:
 
 1.  **"Container failed to start"**:
-    - Run `git pull` again. We fixed a bug in the Dockerfile.
+    - Run `git pull` again (we fixed a build issue).
     - Run `./scripts/deploy_fresh.sh` again.
 
-2.  **"Already exists" errors**:
-    - These are fine. The script is smart enough to skip what's already done.
+2.  **"Invalid Service Networking config" / "Reserved range not found"**:
+    - This means your network is in a half-deleted state.
+    - **Run this command to fix it:**
+      ```bash
+      ./scripts/nuke.sh
+      ```
+    - Then run `./scripts/deploy_fresh.sh` again.
 
-3.  **Total Reset (Nuclear Option)**:
-    - If everything is broken and you want to start over:
-    ```bash
-    ./scripts/nuke.sh
-    ```
-    - Then run `deploy_fresh.sh` again.
+3.  **"Already exists" errors**:
+    - These are fine. The script is smart enough to skip what's already done.
