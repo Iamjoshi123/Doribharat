@@ -128,13 +128,17 @@ echo "--> [5/6] Deploying App..."
 DB_CONN_NAME="${PROJECT_ID}:${REGION}:${DB_INSTANCE_NAME}"
 JWT_SECRET=$(openssl rand -base64 32 | tr -dc 'a-zA-Z0-9')
 
+echo "    Storing JWT Secret..."
+echo -n "$JWT_SECRET" | gcloud secrets create jwt-secret --data-file=- --replication-policy=automatic --quiet || \
+echo -n "$JWT_SECRET" | gcloud secrets versions add jwt-secret --data-file=- --quiet
+
 # FIXED: Env vars to match backend/src/config/env.ts
 gcloud run deploy doribharat-api \
   --source . \
   --region $REGION \
   --allow-unauthenticated \
-  --set-env-vars DB_HOST="/cloudsql/${DB_CONN_NAME}",DB_USER="${DB_USER}",DB_NAME="${DB_NAME}",CLOUD_SQL_CONNECTION_NAME="${DB_CONN_NAME}",JWT_SIGNING_KEY_SECRET="${JWT_SECRET}",GCS_BUCKET_NAME="doribharat-media-${PROJECT_ID}" \
-  --set-secrets DB_PASS=db-password:latest,ADMIN_USERS_SECRET=admin-users-secret:latest \
+  --set-env-vars DB_HOST="/cloudsql/${DB_CONN_NAME}",DB_USER="${DB_USER}",DB_NAME="${DB_NAME}",CLOUD_SQL_CONNECTION_NAME="${DB_CONN_NAME}",GCS_BUCKET_NAME="doribharat-media-${PROJECT_ID}" \
+  --set-secrets DB_PASS=db-password:latest,ADMIN_USERS_SECRET=admin-users-secret:latest,JWT_SIGNING_KEY_SECRET=jwt-secret:latest \
   --add-cloudsql-instances ${DB_CONN_NAME} \
   --quiet
 
