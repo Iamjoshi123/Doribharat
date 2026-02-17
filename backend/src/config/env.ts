@@ -10,8 +10,11 @@ export interface AppConfig {
   dbPass: string;
   dbName: string;
   cloudSqlConnectionName: string;
-  jwtSigningKeySecret: string; // Added for your auth logic
-  adminUsersSecret: string;    // Added for your admin logic
+  jwtSigningKeySecret: string;
+  adminUsersSecret: string;
+  // Added missing fields
+  gcsBucket: string;
+  dbInstance: string;
 }
 
 const numberFromEnv = (value: string | undefined, fallback: number): number => {
@@ -29,15 +32,19 @@ export const loadConfig = (): AppConfig => {
   return {
     port: numberFromEnv(process.env.PORT, 8080),
     googleCloudProject: process.env.GOOGLE_CLOUD_PROJECT || process.env.GCP_PROJECT || '',
-    
+
     // Database Config
     dbUser: required(process.env.DB_USER, "DB_USER"),
     dbPass: required(process.env.DB_PASS, "DB_PASS"),
     dbName: required(process.env.DB_NAME, "DB_NAME"),
     cloudSqlConnectionName: required(process.env.CLOUD_SQL_CONNECTION_NAME, "CLOUD_SQL_CONNECTION_NAME"),
-    
-    // Auth Secrets (Required for your specific app logic)
+
+    // Auth Secrets
     jwtSigningKeySecret: required(process.env.JWT_SIGNING_KEY_SECRET, "JWT_SIGNING_KEY_SECRET"),
-    adminUsersSecret: required(process.env.ADMIN_USERS_SECRET, "ADMIN_USERS_SECRET")
+    adminUsersSecret: required(process.env.ADMIN_USERS_SECRET, "ADMIN_USERS_SECRET"),
+
+    // Added missing fields
+    gcsBucket: process.env.GCS_BUCKET_NAME || '',
+    dbInstance: process.env.DB_INSTANCE_NAME || ''
   };
 };
