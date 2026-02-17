@@ -1,0 +1,14 @@
+.git
+.github
+node_modules
+backend/node_modules
+dist
+backend/dist
+coverage
+test
+scripts/
+README.md
+LICENSE
+.env
+.env.local
+.DS_Store

@@ -13,12 +13,11 @@ RUN npm run build
 # --- Stage 2: Build Backend ---
 FROM node:20-slim AS backend-builder
 WORKDIR /app/backend
-COPY package*.json tsconfig.json ./
-# FIXED: Copy src instead of server
-COPY src ./src
-COPY prisma ./prisma
+# Copy backend-specific files from backend/ directory
+COPY backend/package*.json backend/tsconfig.json ./
+COPY backend/src ./src
+COPY backend/prisma ./prisma
 RUN npm install
-# FIXED: Run prisma generate and build
 RUN npx prisma generate
 RUN npm run build
 RUN npm prune --omit=dev
