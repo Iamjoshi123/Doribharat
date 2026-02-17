@@ -13,6 +13,17 @@ export const createServer = (config: AppConfig): Express => {
     res.json({ status: 'ok' });
   });
 
+  app.get('/', async (_req, res) => {
+    res.json({
+      message: 'Doribharat API is running',
+      endpoints: {
+        health: '/health',
+        config: '/config',
+        orders: '/api/orders'
+      }
+    });
+  });
+
   app.get('/config', async (_req, res) => {
     res.json({
       project: config.googleCloudProject,
