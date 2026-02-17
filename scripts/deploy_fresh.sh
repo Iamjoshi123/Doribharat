@@ -134,7 +134,7 @@ gcloud run deploy doribharat-api \
   --region $REGION \
   --allow-unauthenticated \
   --set-env-vars DB_HOST="/cloudsql/${DB_CONN_NAME}",DB_USER="${DB_USER}",DB_NAME="${DB_NAME}",CLOUD_SQL_CONNECTION_NAME="${DB_CONN_NAME}",JWT_SIGNING_KEY_SECRET="${JWT_SECRET}",GCS_BUCKET_NAME="doribharat-media-${PROJECT_ID}" \
-  --set-secrets DB_PASS=db-password:latest,ADMIN_USERS_SECRET=admin-users-secret:latest \
+  --set-secrets DB_PASSWORD=db-password:latest,ADMIN_USERS_SECRET=admin-users-secret:latest \
   --add-cloudsql-instances ${DB_CONN_NAME} \
   --quiet
 
@@ -149,7 +149,7 @@ gcloud run jobs deploy doribharat-migrate \
   --region $REGION \
   --command "npx","prisma","migrate","deploy" \
   --set-env-vars DB_HOST="/cloudsql/${DB_CONN_NAME}",DB_USER="${DB_USER}",DB_NAME="${DB_NAME}",CLOUD_SQL_CONNECTION_NAME="${DB_CONN_NAME}",JWT_SIGNING_KEY_SECRET="${JWT_SECRET}" \
-  --set-secrets DB_PASS=db-password:latest \
+  --set-secrets DB_PASSWORD=db-password:latest \
   --add-cloudsql-instances ${DB_CONN_NAME} \
   --quiet
 gcloud run jobs execute doribharat-migrate --region $REGION --wait

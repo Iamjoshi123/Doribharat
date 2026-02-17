@@ -1,9 +1,14 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const ai = GEMINI_API_KEY ? new GoogleGenAI({ apiKey: GEMINI_API_KEY }) : null;
 
 export const generateProductDescription = async (name: string, category: string) => {
+  if (!ai) {
+    throw new Error('Gemini API key is missing. Set VITE_GEMINI_API_KEY.');
+  }
+
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
@@ -16,6 +21,6 @@ export const generateProductDescription = async (name: string, category: string)
     return response.text;
   } catch (error) {
     console.error("Gemini Error:", error);
-    return "";
+    throw new Error('Failed to generate product description via Gemini.');
   }
 };

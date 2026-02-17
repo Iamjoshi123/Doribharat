@@ -243,9 +243,15 @@ const Admin: React.FC<AdminProps> = ({
       return;
     }
     setIsGenerating(true);
-    const desc = await generateProductDescription(productFormData.name, productFormData.category);
-    setProductFormData(prev => ({ ...prev, description: desc }));
-    setIsGenerating(false);
+    try {
+      const desc = await generateProductDescription(productFormData.name, productFormData.category);
+      setProductFormData(prev => ({ ...prev, description: desc }));
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unable to generate AI description right now.';
+      alert(message);
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   if (!user || user.role !== UserRole.ADMIN) {

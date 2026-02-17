@@ -15,6 +15,8 @@ export interface AppConfig {
   // Added missing fields
   gcsBucket: string;
   dbInstance: string;
+  corsAllowedOrigins: string[];
+  enableDebugEndpoints: boolean;
 }
 
 const numberFromEnv = (value: string | undefined, fallback: number): number => {
@@ -29,6 +31,11 @@ const required = (value: string | undefined, name: string): string => {
 };
 
 export const loadConfig = (): AppConfig => {
+  const corsAllowedOrigins = (process.env.CORS_ALLOWED_ORIGINS || process.env.FRONTEND_ORIGIN || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+
   return {
     port: numberFromEnv(process.env.PORT, 8080),
     googleCloudProject: process.env.GOOGLE_CLOUD_PROJECT || process.env.GCP_PROJECT || '',
@@ -45,6 +52,8 @@ export const loadConfig = (): AppConfig => {
 
     // Added missing fields
     gcsBucket: process.env.GCS_BUCKET_NAME || '',
-    dbInstance: process.env.DB_INSTANCE_NAME || ''
+    dbInstance: process.env.DB_INSTANCE_NAME || '',
+    corsAllowedOrigins,
+    enableDebugEndpoints: process.env.ENABLE_DEBUG_ENDPOINTS === 'true',
   };
 };
