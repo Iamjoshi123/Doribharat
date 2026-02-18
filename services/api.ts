@@ -1,7 +1,9 @@
 import { Category, HomepageConfig, Product, User, UserRole } from '../types';
 
 const rawBaseUrl =
-  import.meta.env.VITE_CLOUD_RUN_BASE_URL?.replace(/\/$/, '') || 'https://api.doribharat.com';
+  import.meta.env.VITE_BACKEND_URL?.replace(/\/$/, '') ||
+  import.meta.env.VITE_CLOUD_RUN_BASE_URL?.replace(/\/$/, '') ||
+  'http://localhost:8080';
 export const API_BASE_URL = `${rawBaseUrl}/v1`;
 export const FRONTEND_ORIGIN =
   import.meta.env.VITE_FRONTEND_ORIGIN || (typeof window !== 'undefined' ? window.location.origin : '');

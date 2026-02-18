@@ -3,6 +3,11 @@ import assert from "node:assert";
 
 dotenv.config();
 
+if (process.env.DISABLE_GCP_SERVICES === 'true ' || process.env.DISABLE_GCP_SERVICES === 'true\r') {
+  process.env.DISABLE_GCP_SERVICES = 'true';
+}
+
+
 export interface AppConfig {
   port: number;
   googleCloudProject: string;

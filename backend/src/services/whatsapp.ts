@@ -9,13 +9,26 @@ export interface WhatsappMessageRequest {
   webhookUrl?: string;
 }
 
-const pubsub = new PubSub({ projectId: process.env.GCLOUD_PROJECT });
+let pubsub: PubSub | null = null;
+if (process.env.DISABLE_GCP_SERVICES !== 'true') {
+  try {
+    pubsub = new PubSub({ projectId: process.env.GCLOUD_PROJECT });
+  } catch (e) {
+    console.warn('Failed to init PubSub', e);
+  }
+}
+
 const whatsappTopic = process.env.WHATSAPP_TOPIC;
 
 export async function enqueueWhatsappWebhook(payload: WhatsappMessageRequest) {
   if (!whatsappTopic) {
     await logWarning('WhatsApp topic not configured, skipping webhook enqueue', { orderId: payload.orderId });
     return { status: 'skipped' as const, reason: 'topic_not_configured' };
+  }
+
+  if (!pubsub) {
+    await logWarning('PubSub not initialized (DISABLE_GCP_SERVICES=true), skipping webhook', { orderId: payload.orderId });
+    return { status: 'skipped' as const, reason: 'pubsub_disabled' };
   }
 
   const webhookUrl = payload.webhookUrl ?? process.env.WHATSAPP_WEBHOOK_URL;

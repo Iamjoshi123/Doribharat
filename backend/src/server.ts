@@ -38,6 +38,7 @@ export const createServer = (config: AppConfig): Express => {
     });
   });
 
+
   if (config.enableDebugEndpoints) {
     app.get('/config', async (_req, res) => {
       res.json({
@@ -49,18 +50,18 @@ export const createServer = (config: AppConfig): Express => {
   }
 
   // Mount API routes (legacy + versioned alias)
+  // Serve static files from the 'public' directory (where Docker puts the frontend build)
+  const path = require('path');
+  const publicPath = path.join(__dirname, '../public');
+  app.use(express.static(publicPath));
+
+  // Mount API routes
   app.use('/api', ordersRouter);
   app.use('/v1', ordersRouter);
 
-  // Catch-all 404 handler
-  app.use((req, res) => {
-    console.log(`404 Not Found: ${req.method} ${req.path}`);
-    res.status(404).json({
-      error: 'Route not found',
-      path: req.path,
-      method: req.method,
-      note: 'If you see this, the new code IS running.'
-    });
+  // Serve index.html for any other route (Client-side routing)
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(publicPath, 'index.html'));
   });
 
   return app;
