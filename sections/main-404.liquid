@@ -1,0 +1,49 @@
+{%- comment -%}
+  Section: 404 Page
+{%- endcomment -%}
+
+{%- style -%}
+  .page-404 {
+    text-align: center;
+    padding: 120px 0;
+  }
+
+  .page-404__icon {
+    font-size: 64px;
+    margin-bottom: 32px;
+    opacity: 0.3;
+  }
+
+  .page-404__heading {
+    margin-bottom: 16px;
+  }
+
+  .page-404__text {
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight-light);
+    margin-bottom: 40px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+  }
+{%- endstyle -%}
+
+<section class="page-404" data-section-id="{{ section.id }}">
+  <div class="page-width">
+    <div class="page-404__icon">🧵</div>
+    <h1 class="page-404__heading serif" style="font-size: clamp(2.5rem, 5vw, 3.75rem);">Page Not Found</h1>
+    <p class="page-404__text">
+      It seems this thread has come undone. The page you're looking for may have been moved or no longer exists.
+    </p>
+    <a href="{{ routes.root_url }}" class="btn btn--primary">Return to Heritage</a>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "404 Page",
+  "class": "section-404",
+  "settings": []
+}
+{% endschema %}

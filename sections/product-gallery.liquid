@@ -1,0 +1,144 @@
+{%- comment -%}
+  Section: Product Gallery
+  Matches the ProductDetail.tsx image gallery with thumbnails
+{%- endcomment -%}
+
+{%- style -%}
+  .product-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .product-gallery__main {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    border-radius: var(--radius-2xl);
+    overflow: hidden;
+    background: var(--color-surface-alt);
+    border: 1px solid var(--color-border);
+  }
+
+  .product-gallery__main img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: scaleIn var(--duration-slow) var(--ease-smooth);
+  }
+
+  .product-gallery__sale-badge {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    z-index: 5;
+  }
+
+  .product-gallery__thumbs {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+
+  .product-gallery__thumb {
+    aspect-ratio: 1;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all var(--duration-normal) var(--ease-smooth);
+    background: none;
+    padding: 0;
+  }
+
+  .product-gallery__thumb:hover {
+    transform: scale(1.05);
+  }
+
+  .product-gallery__thumb.is-active {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(166, 44, 43, 0.1);
+  }
+
+  .product-gallery__thumb:active {
+    transform: scale(0.95);
+  }
+
+  .product-gallery__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+{%- endstyle -%}
+
+<div class="product-gallery" data-section-id="{{ section.id }}" id="ProductGallery">
+  {%- comment -%} Main Image {%- endcomment -%}
+  <div class="product-gallery__main">
+    {%- if product.compare_at_price > product.price -%}
+      <div class="product-gallery__sale-badge">
+        <span class="badge badge--sale">{{ 'products.product.sale' | t }}</span>
+      </div>
+    {%- endif -%}
+
+    {%- if product.featured_media != blank -%}
+      <img
+        id="ProductMainImage"
+        src="{{ product.featured_media | image_url: width: 1200 }}"
+        alt="{{ product.featured_media.alt | default: product.title }}"
+        loading="eager"
+        width="1200"
+        height="{{ 1200 | divided_by: product.featured_media.aspect_ratio | round }}"
+      >
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Thumbnails {%- endcomment -%}
+  {%- if product.media.size > 1 -%}
+    <div class="product-gallery__thumbs">
+      {%- for media in product.media -%}
+        <button
+          class="product-gallery__thumb {% if forloop.first %}is-active{% endif %}"
+          data-media-id="{{ media.id }}"
+          data-image-url="{{ media | image_url: width: 1200 }}"
+          aria-label="View image {{ forloop.index }}"
+          onclick="switchImage(this)"
+        >
+          <img
+            src="{{ media | image_url: width: 200 }}"
+            alt="{{ media.alt | default: product.title }} {{ forloop.index }}"
+            loading="lazy"
+            width="200"
+            height="{{ 200 | divided_by: media.aspect_ratio | round }}"
+          >
+        </button>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+</div>
+
+<script>
+  function switchImage(thumb) {
+    // Update main image
+    var mainImg = document.getElementById('ProductMainImage');
+    if (mainImg) {
+      mainImg.src = thumb.getAttribute('data-image-url');
+      mainImg.style.animation = 'none';
+      mainImg.offsetHeight; // Trigger reflow
+      mainImg.style.animation = 'scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1)';
+    }
+    // Toggle active state
+    document.querySelectorAll('.product-gallery__thumb').forEach(function(t) {
+      t.classList.remove('is-active');
+    });
+    thumb.classList.add('is-active');
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Product Gallery",
+  "class": "section-product-gallery",
+  "settings": []
+}
+{% endschema %}

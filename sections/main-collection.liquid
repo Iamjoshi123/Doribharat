@@ -1,0 +1,179 @@
+{%- comment -%}
+  Section: Main Collection Grid
+  Collection template main section — matching CategoryPage.tsx
+{%- endcomment -%}
+
+{%- style -%}
+  .collection-page__header {
+    text-align: center;
+    margin-bottom: 48px;
+    padding-top: 16px;
+  }
+
+  .collection-page__tagline {
+    color: var(--color-secondary);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    font-size: 10px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .collection-page__title {
+    margin-bottom: 24px;
+    color: var(--color-text);
+  }
+
+  .collection-page__desc {
+    max-width: 600px;
+    margin: 0 auto;
+    color: var(--color-text-light);
+    font-weight: var(--font-weight-light);
+    line-height: 1.7;
+  }
+
+  .collection-page__count {
+    font-size: 12px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin-bottom: 32px;
+    text-align: center;
+  }
+
+  .collection-page__grid {
+    display: grid;
+    grid-template-columns: repeat({{ section.settings.products_per_row }}, 1fr);
+    gap: var(--card-gap);
+  }
+
+  @media (max-width: 989px) {
+    .collection-page__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 749px) {
+    .collection-page__grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  }
+
+  .collection-page__pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 48px;
+  }
+
+  .collection-page__pagination a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-full);
+    color: var(--color-text-light);
+    font-weight: var(--font-weight-medium);
+    font-size: 14px;
+    transition: all var(--duration-normal);
+  }
+
+  .collection-page__pagination a:hover {
+    background: var(--color-surface-alt);
+  }
+
+  .collection-page__pagination a.is-current {
+    background: var(--color-primary);
+    color: #fff;
+  }
+
+  .collection-page__empty {
+    text-align: center;
+    padding: 80px 0;
+    color: var(--color-text-muted);
+  }
+{%- endstyle -%}
+
+<section class="section-spacing" data-section-id="{{ section.id }}">
+  <div class="page-width">
+    {%- comment -%} Breadcrumb {%- endcomment -%}
+    <nav class="breadcrumb">
+      <a href="{{ routes.root_url }}">Home</a>
+      <span>/</span>
+      <span class="breadcrumb__current">{{ collection.title }}</span>
+    </nav>
+
+    {%- comment -%} Header {%- endcomment -%}
+    <div class="collection-page__header">
+      <span class="collection-page__tagline">{{ 'collections.curated_selection' | t }}</span>
+      <h1 class="collection-page__title serif">{{ collection.title }}</h1>
+      {%- if collection.description != blank -%}
+        <p class="collection-page__desc">{{ collection.description }}</p>
+      {%- endif -%}
+    </div>
+
+    <p class="collection-page__count">{{ collection.products_count }} {{ collection.products_count | pluralize: 'product', 'products' }}</p>
+
+    {%- comment -%} Grid {%- endcomment -%}
+    {%- if collection.products.size > 0 -%}
+      {%- paginate collection.products by section.settings.products_per_page -%}
+        <div class="collection-page__grid">
+          {%- for product in collection.products -%}
+            {% render 'product-card', product: product %}
+          {%- endfor -%}
+        </div>
+
+        {%- if paginate.pages > 1 -%}
+          <nav class="collection-page__pagination" aria-label="Pagination">
+            {%- if paginate.previous -%}
+              <a href="{{ paginate.previous.url }}" aria-label="Previous">&larr;</a>
+            {%- endif -%}
+            {%- for part in paginate.parts -%}
+              {%- if part.is_link -%}
+                <a href="{{ part.url }}">{{ part.title }}</a>
+              {%- else -%}
+                <a class="is-current" aria-current="page">{{ part.title }}</a>
+              {%- endif -%}
+            {%- endfor -%}
+            {%- if paginate.next -%}
+              <a href="{{ paginate.next.url }}" aria-label="Next">&rarr;</a>
+            {%- endif -%}
+          </nav>
+        {%- endif -%}
+      {%- endpaginate -%}
+    {%- else -%}
+      <div class="collection-page__empty">
+        <p>{{ 'collections.no_products' | t }}</p>
+        <a href="{{ routes.collections_url }}" class="btn btn--primary" style="margin-top: 24px;">
+          {{ 'collections.discover_more' | t }}
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Collection Grid",
+  "class": "section-collection-grid",
+  "settings": [
+    {
+      "type": "range",
+      "id": "products_per_row",
+      "label": "Products per row (desktop)",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "default": 16
+    }
+  ]
+}
+{% endschema %}

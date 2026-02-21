@@ -1,0 +1,301 @@
+{%- comment -%}
+  Section: Cart Page
+  Matches the CartPage from App.tsx
+{%- endcomment -%}
+
+{%- style -%}
+  .cart-page__header {
+    text-align: center;
+    margin-bottom: 48px;
+    padding-top: 16px;
+  }
+
+  .cart-page__tagline {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    font-size: 10px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .cart-page__grid {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 48px;
+    align-items: start;
+  }
+
+  @media (max-width: 989px) {
+    .cart-page__grid { grid-template-columns: 1fr; }
+  }
+
+  .cart-item {
+    display: flex;
+    gap: 24px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .cart-item__image {
+    width: 120px;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    background: var(--color-surface-alt);
+    flex-shrink: 0;
+  }
+
+  .cart-item__image img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+  }
+
+  .cart-item__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .cart-item__title {
+    font-weight: var(--font-weight-semibold);
+    font-size: 1rem;
+    margin-bottom: 4px;
+  }
+
+  .cart-item__type {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--color-secondary);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .cart-item__price {
+    font-weight: var(--font-weight-bold);
+    font-size: 15px;
+    color: var(--color-text);
+  }
+
+  .cart-item__actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 12px;
+  }
+
+  .cart-item__remove {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight-semibold);
+    transition: color var(--duration-normal);
+    padding: 4px 0;
+  }
+
+  .cart-item__remove:hover {
+    color: var(--color-primary);
+  }
+
+  .cart-summary {
+    background: var(--color-surface);
+    border-radius: var(--radius-2xl);
+    border: 1px solid var(--color-border);
+    padding: 32px;
+    position: sticky;
+    top: 120px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  @media (min-width: 750px) {
+    .cart-summary { padding: 40px; }
+  }
+
+  .cart-summary__row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 14px;
+  }
+
+  .cart-summary__row span:first-child {
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    font-weight: var(--font-weight-semibold);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+  }
+
+  .cart-summary__row span:last-child {
+    font-weight: var(--font-weight-medium);
+  }
+
+  .cart-summary__total {
+    display: flex;
+    justify-content: space-between;
+    padding: 24px 0 0;
+    font-size: 1.25rem;
+  }
+
+  .cart-summary__total-label {
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-size: 11px;
+  }
+
+  .cart-summary__total-value {
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary);
+  }
+
+  .cart-summary__buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .cart-summary__features {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .cart-summary__feature {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  .cart-empty {
+    text-align: center;
+    padding: 80px 0;
+  }
+
+  .cart-empty__icon {
+    font-size: 48px;
+    margin-bottom: 24px;
+    opacity: 0.3;
+  }
+
+  .cart-empty__heading {
+    margin-bottom: 16px;
+  }
+
+  .cart-empty__text {
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight-light);
+    margin-bottom: 32px;
+  }
+{%- endstyle -%}
+
+<section class="section-spacing" data-section-id="{{ section.id }}">
+  <div class="page-width">
+    {%- if cart.item_count > 0 -%}
+      <div class="cart-page__header">
+        <span class="cart-page__tagline">{{ 'cart.title' | t }}</span>
+        <h1 class="serif" style="font-size: clamp(2.5rem, 5vw, 3.75rem);">{{ 'cart.title' | t }}</h1>
+      </div>
+
+      <form action="{{ routes.cart_url }}" method="post">
+        <div class="cart-page__grid">
+          {%- comment -%} Cart Items {%- endcomment -%}
+          <div>
+            {%- for item in cart.items -%}
+              <div class="cart-item">
+                <div class="cart-item__image">
+                  <a href="{{ item.url }}">
+                    <img
+                      src="{{ item.image | image_url: width: 240 }}"
+                      alt="{{ item.title }}"
+                      loading="lazy"
+                      width="120"
+                      height="120"
+                    >
+                  </a>
+                </div>
+                <div class="cart-item__info">
+                  <div>
+                    <p class="cart-item__type">{{ item.product.type }}</p>
+                    <a href="{{ item.url }}" class="cart-item__title">{{ item.product.title }}</a>
+                  </div>
+                  <div class="cart-item__actions">
+                    <div class="qty-selector" style="transform: scale(0.85); transform-origin: left;">
+                      <a href="{{ routes.cart_change_url }}?id={{ item.key }}&quantity={{ item.quantity | minus: 1 }}" class="qty-selector__btn">−</a>
+                      <span class="qty-selector__value">{{ item.quantity }}</span>
+                      <a href="{{ routes.cart_change_url }}?id={{ item.key }}&quantity={{ item.quantity | plus: 1 }}" class="qty-selector__btn">+</a>
+                    </div>
+                    <span class="cart-item__price">{{ item.final_line_price | money }}</span>
+                  </div>
+                  <a href="{{ routes.cart_change_url }}?id={{ item.key }}&quantity=0" class="cart-item__remove">{{ 'cart.remove' | t }}</a>
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+
+          {%- comment -%} Summary {%- endcomment -%}
+          <div class="cart-summary">
+            <div class="cart-summary__row">
+              <span>{{ 'cart.subtotal' | t }}</span>
+              <span>{{ cart.total_price | money }}</span>
+            </div>
+            <div class="cart-summary__row">
+              <span>{{ 'cart.shipping' | t }}</span>
+              <span style="color: var(--color-secondary);">{{ 'cart.shipping_free' | t }}</span>
+            </div>
+            <div class="cart-summary__total">
+              <span class="cart-summary__total-label">{{ 'cart.total' | t }}</span>
+              <span class="cart-summary__total-value">{{ cart.total_price | money }}</span>
+            </div>
+            <div class="cart-summary__buttons">
+              <button type="submit" name="checkout" class="btn btn--dark btn--full">
+                {{ 'cart.checkout' | t }}
+              </button>
+              <a
+                href="https://wa.me/{{ settings.whatsapp_number }}?text={{ 'I want to order from ' | append: shop.name | append: '. Cart total: ' | append: cart.total_price | money | url_encode }}"
+                target="_blank"
+                rel="noopener"
+                class="btn btn--whatsapp btn--full"
+              >
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0012.05 0"/></svg>
+                {{ 'cart.order_whatsapp' | t }}
+              </a>
+            </div>
+            <div class="cart-summary__features">
+              <span class="cart-summary__feature">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                {{ 'cart.secure_delivery' | t }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </form>
+    {%- else -%}
+      <div class="cart-empty">
+        <div class="cart-empty__icon">🛍️</div>
+        <h1 class="cart-empty__heading serif">{{ 'cart.empty' | t }}</h1>
+        <p class="cart-empty__text">{{ 'cart.empty_description' | t }}</p>
+        <a href="{{ routes.collections_url }}" class="btn btn--primary">{{ 'cart.continue_shopping' | t }}</a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Cart Page",
+  "class": "section-cart"
+}
+{% endschema %}

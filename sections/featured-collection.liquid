@@ -1,0 +1,137 @@
+{%- comment -%}
+  Section: Featured Collection
+  Matches the "Signature Pieces" section from Home.tsx
+{%- endcomment -%}
+
+{%- style -%}
+  .featured-collection {
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .featured-collection__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .featured-collection__tagline {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    font-size: 10px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .featured-collection__link {
+    color: var(--color-text-muted);
+    font-size: 14px;
+    font-weight: var(--font-weight-medium);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 4px;
+    transition: color var(--duration-normal);
+  }
+
+  .featured-collection__link:hover {
+    color: var(--color-text);
+  }
+
+  .featured-collection__grid {
+    display: grid;
+    grid-template-columns: repeat({{ section.settings.products_per_row }}, 1fr);
+    gap: var(--card-gap);
+  }
+
+  @media (max-width: 989px) {
+    .featured-collection__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 749px) {
+    .featured-collection__grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  }
+{%- endstyle -%}
+
+<section class="featured-collection section-spacing" data-section-id="{{ section.id }}">
+  <div class="page-width">
+    <div class="featured-collection__header">
+      <div>
+        <span class="featured-collection__tagline">{{ section.settings.tagline | default: 'sections.featured_collection.tagline' | t }}</span>
+        <h2 class="serif">{{ section.settings.heading | default: 'sections.featured_collection.heading' | t }}</h2>
+      </div>
+      {%- if section.settings.collection != blank -%}
+        <a href="{{ section.settings.collection.url }}" class="featured-collection__link">
+          {{ 'products.product.view_collection' | t }}
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div class="featured-collection__grid">
+      {%- assign collection = section.settings.collection -%}
+      {%- if collection != blank -%}
+        {%- for product in collection.products limit: section.settings.products_to_show -%}
+          {% render 'product-card', product: product %}
+        {%- endfor -%}
+      {%- else -%}
+        {%- for i in (1..section.settings.products_to_show) -%}
+          {% render 'product-card-placeholder' %}
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Featured Collection",
+  "class": "section-featured-collection",
+  "settings": [
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Tagline",
+      "default": "Our Favorites"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Signature Pieces"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Products to show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "products_per_row",
+      "label": "Products per row (desktop)",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 4
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Collection",
+      "category": "Collections"
+    }
+  ]
+}
+{% endschema %}

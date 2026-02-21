@@ -1,0 +1,110 @@
+{%- comment -%}
+  Section: Newsletter
+  Email capture section for footer area
+{%- endcomment -%}
+
+{%- style -%}
+  .newsletter {
+    background: var(--color-surface-alt);
+    border-top: 1px solid var(--color-border);
+    text-align: center;
+  }
+
+  .newsletter__heading {
+    margin-bottom: 8px;
+  }
+
+  .newsletter__text {
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight-light);
+    max-width: 480px;
+    margin: 0 auto 32px;
+    line-height: 1.7;
+  }
+
+  .newsletter__form {
+    display: flex;
+    gap: 12px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 749px) {
+    .newsletter__form { flex-direction: column; }
+  }
+
+  .newsletter__input {
+    flex: 1;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-dark);
+    border-radius: var(--radius-full);
+    padding: 14px 24px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    outline: none;
+    transition: border-color var(--duration-normal);
+  }
+
+  .newsletter__input:focus {
+    border-color: var(--color-primary);
+  }
+
+  .newsletter__disclaimer {
+    margin-top: 16px;
+    font-size: 11px;
+    color: var(--color-text-muted);
+    letter-spacing: 0.05em;
+  }
+{%- endstyle -%}
+
+<section class="newsletter section-spacing" data-section-id="{{ section.id }}">
+  <div class="page-width">
+    <h2 class="newsletter__heading serif">{{ section.settings.heading | default: 'sections.newsletter.heading' | t }}</h2>
+    <p class="newsletter__text">{{ section.settings.subheading | default: 'sections.newsletter.subheading' | t }}</p>
+
+    {%- form 'customer', class: 'newsletter__form' -%}
+      <input type="hidden" name="contact[tags]" value="newsletter">
+      <input
+        type="email"
+        name="contact[email]"
+        class="newsletter__input"
+        placeholder="{{ 'sections.newsletter.placeholder' | t }}"
+        required
+        autocomplete="email"
+        aria-label="{{ 'sections.newsletter.placeholder' | t }}"
+      >
+      <button type="submit" class="btn btn--primary">
+        {{ 'sections.newsletter.button' | t }}
+      </button>
+    {%- endform -%}
+
+    <p class="newsletter__disclaimer">{{ 'sections.newsletter.disclaimer' | t }}</p>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Newsletter",
+  "class": "section-newsletter",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Join the Heritage Circle"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Be the first to discover new collections, artisan stories, and exclusive offers."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter",
+      "category": "Marketing"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,20 @@
+{
+    "sections": {
+        "main": {
+            "type": "main-product",
+            "settings": {}
+        },
+        "related": {
+            "type": "related-products",
+            "settings": {
+                "tagline": "Pair It With",
+                "heading": "You May Also Love",
+                "limit": 4
+            }
+        }
+    },
+    "order": [
+        "main",
+        "related"
+    ]
+}

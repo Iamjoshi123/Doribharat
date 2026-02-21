@@ -1,0 +1,144 @@
+{%- comment -%}
+  Section: Trust Badges
+  Handcrafted, Free Shipping, Secure Payment, Easy Returns
+{%- endcomment -%}
+
+{%- style -%}
+  .trust-badges {
+    background: var(--color-surface-alt);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .trust-badges__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 32px;
+    text-align: center;
+  }
+
+  @media (max-width: 989px) {
+    .trust-badges__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 749px) {
+    .trust-badges__grid { grid-template-columns: 1fr; gap: 24px; }
+  }
+
+  .trust-badge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 24px;
+  }
+
+  .trust-badge__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-full);
+    background: var(--color-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--color-border);
+  }
+
+  .trust-badge__title {
+    font-weight: var(--font-weight-bold);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--color-text);
+  }
+
+  .trust-badge__desc {
+    font-size: 13px;
+    color: var(--color-text-muted);
+    font-weight: var(--font-weight-light);
+    line-height: 1.5;
+  }
+{%- endstyle -%}
+
+<section class="trust-badges section-spacing" data-section-id="{{ section.id }}">
+  <div class="page-width">
+    <div class="trust-badges__grid">
+      {%- for block in section.blocks -%}
+        <div class="trust-badge" {{ block.shopify_attributes }}>
+          <div class="trust-badge__icon">
+            {%- case block.settings.icon -%}
+              {%- when 'handcrafted' -%}
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M7 11.5V14m0-2.5v-6a1.5 1.5 0 113 0m-3 6a1.5 1.5 0 00-3 0v2a7.5 7.5 0 0015 0v-5a1.5 1.5 0 00-3 0m-6-3V11m0-5.5v-1a1.5 1.5 0 013 0v1m0 0V11m0-5.5a1.5 1.5 0 013 0v3m0 0V11"/></svg>
+              {%- when 'shipping' -%}
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"/></svg>
+              {%- when 'secure' -%}
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
+              {%- when 'returns' -%}
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182"/></svg>
+              {%- else -%}
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z"/></svg>
+            {%- endcase -%}
+          </div>
+          <div class="trust-badge__title">{{ block.settings.title }}</div>
+          <div class="trust-badge__desc">{{ block.settings.description }}</div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Trust Badges",
+  "class": "section-trust-badges",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "badge",
+      "name": "Badge",
+      "limit": 6,
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "handcrafted", "label": "Handcrafted" },
+            { "value": "shipping", "label": "Shipping" },
+            { "value": "secure", "label": "Secure" },
+            { "value": "returns", "label": "Returns" },
+            { "value": "star", "label": "Star" }
+          ],
+          "default": "handcrafted"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Handcrafted"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description",
+          "default": "Every piece is made by skilled artisans"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trust Badges",
+      "category": "Trust",
+      "blocks": [
+        { "type": "badge", "settings": { "icon": "handcrafted", "title": "Handcrafted", "description": "Every piece is made by skilled artisans" } },
+        { "type": "badge", "settings": { "icon": "shipping", "title": "Free Shipping", "description": "Complimentary delivery across India" } },
+        { "type": "badge", "settings": { "icon": "secure", "title": "Secure Payment", "description": "100% safe and encrypted checkout" } },
+        { "type": "badge", "settings": { "icon": "returns", "title": "Easy Returns", "description": "Hassle-free 7-day return policy" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,19 @@
+{%- comment -%}
+  Snippet: Product Card Placeholder
+  Shown when no collection is selected
+{%- endcomment -%}
+
+<div class="product-card">
+  <div class="product-card__media">
+    <div class="product-card__image-link" style="background: var(--color-surface-alt); display: flex; align-items: center; justify-content: center; height: 100%;">
+      {{ 'product-1' | placeholder_svg_tag: 'placeholder-svg' }}
+    </div>
+  </div>
+  <div class="product-card__info">
+    <p class="product-card__type" style="width: 60px; height: 10px; background: var(--color-border); border-radius: 4px;"></p>
+    <h3 class="product-card__title" style="width: 120px; height: 16px; background: var(--color-border); border-radius: 4px; margin-top: 8px;"></h3>
+    <div class="product-card__price" style="margin-top: 12px;">
+      <span style="width: 50px; height: 14px; background: var(--color-border); border-radius: 4px; display: block;"></span>
+    </div>
+  </div>
+</div>

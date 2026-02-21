@@ -1,0 +1,80 @@
+{%- comment -%}
+  Section: Main Page
+  Generic page content section
+{%- endcomment -%}
+
+{%- style -%}
+  .main-page__header {
+    text-align: center;
+    margin-bottom: 48px;
+    padding-top: 16px;
+  }
+
+  .main-page__tagline {
+    color: var(--color-secondary);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    font-size: 10px;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .main-page__content {
+    max-width: 800px;
+    margin: 0 auto;
+    color: var(--color-text-light);
+    font-weight: var(--font-weight-light);
+    line-height: 1.8;
+    font-size: 1rem;
+  }
+
+  .main-page__content h2,
+  .main-page__content h3 {
+    margin-top: 48px;
+    margin-bottom: 24px;
+    color: var(--color-text);
+  }
+
+  .main-page__content p {
+    margin-bottom: 24px;
+  }
+
+  .main-page__content a {
+    color: var(--color-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .main-page__content img {
+    border-radius: var(--radius-xl);
+    margin: 32px 0;
+  }
+{%- endstyle -%}
+
+<section class="section-spacing" data-section-id="{{ section.id }}">
+  <div class="page-width">
+    <nav class="breadcrumb">
+      <a href="{{ routes.root_url }}">Home</a>
+      <span>/</span>
+      <span class="breadcrumb__current">{{ page.title }}</span>
+    </nav>
+
+    <div class="main-page__header">
+      <span class="main-page__tagline">{{ page.title }}</span>
+      <h1 class="serif" style="font-size: clamp(2.5rem, 5vw, 3.75rem);">{{ page.title }}</h1>
+    </div>
+
+    <div class="main-page__content rte">
+      {{ page.content }}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Page Content",
+  "class": "section-main-page",
+  "settings": []
+}
+{% endschema %}

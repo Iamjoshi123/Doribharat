@@ -1,0 +1,87 @@
+{%- comment -%}
+  Section: Related Products
+  "You may also like" recommendations
+{%- endcomment -%}
+
+{%- style -%}
+  .related-products {
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .related-products__header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .related-products__tagline {
+    color: var(--color-primary);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    font-size: 10px;
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .related-products__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--card-gap);
+  }
+
+  @media (max-width: 989px) {
+    .related-products__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 749px) {
+    .related-products__grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  }
+{%- endstyle -%}
+
+{%- if recommendations.performed? and recommendations.products_count > 0 -%}
+<section class="related-products section-spacing" data-section-id="{{ section.id }}">
+  <div class="page-width">
+    <div class="related-products__header">
+      <span class="related-products__tagline">{{ section.settings.tagline }}</span>
+      <h2 class="serif">{{ section.settings.heading }}</h2>
+    </div>
+
+    <div class="related-products__grid">
+      {%- for product in recommendations.products limit: section.settings.limit -%}
+        {% render 'product-card', product: product %}
+      {%- endfor -%}
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Related Products",
+  "class": "section-related-products",
+  "settings": [
+    {
+      "type": "text",
+      "id": "tagline",
+      "label": "Tagline",
+      "default": "Pair It With"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "You May Also Love"
+    },
+    {
+      "type": "range",
+      "id": "limit",
+      "label": "Number of products",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4
+    }
+  ]
+}
+{% endschema %}

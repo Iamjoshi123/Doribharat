@@ -1,0 +1,261 @@
+{%- comment -%}
+  Section: Header / Navigation
+  Matches the Doribharat Navbar component with sticky, blurred nav
+{%- endcomment -%}
+
+{%- style -%}
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .site-header__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 80px;
+  }
+
+  .site-header__logo {
+    font-family: var(--font-heading);
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    text-decoration: none;
+  }
+
+  .site-header__logo img {
+    max-height: 48px;
+    width: auto;
+  }
+
+  .site-header__nav {
+    display: none;
+    align-items: center;
+    gap: 32px;
+  }
+
+  @media (min-width: 750px) {
+    .site-header__nav { display: flex; }
+  }
+
+  .site-header__nav a {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-light);
+    transition: color var(--duration-normal);
+    font-size: 15px;
+  }
+
+  .site-header__nav a:hover,
+  .site-header__nav a.is-active {
+    color: var(--color-primary);
+  }
+
+  .site-header__icons {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .site-header__icon {
+    position: relative;
+    padding: 8px;
+    color: var(--color-text-light);
+    transition: color var(--duration-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .site-header__icon:hover {
+    color: var(--color-primary);
+  }
+
+  .site-header__icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .site-header__badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: var(--color-primary);
+    color: #fff;
+    font-size: 10px;
+    font-weight: var(--font-weight-bold);
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+  }
+
+  .site-header__menu-toggle {
+    display: flex;
+    padding: 8px;
+    color: var(--color-text-light);
+  }
+
+  @media (min-width: 750px) {
+    .site-header__menu-toggle { display: none; }
+  }
+
+  .site-header__menu-toggle svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .site-header__mobile-menu {
+    display: none;
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    padding: 24px;
+    box-shadow: var(--shadow-xl);
+  }
+
+  .site-header__mobile-menu.is-open {
+    display: block;
+  }
+
+  .site-header__mobile-menu a {
+    display: block;
+    padding: 12px 0;
+    font-weight: var(--font-weight-medium);
+    font-size: 16px;
+    color: var(--color-text);
+  }
+
+  .site-header__mobile-menu a:hover {
+    color: var(--color-primary);
+  }
+{%- endstyle -%}
+
+<header class="site-header" data-section-id="{{ section.id }}">
+  <div class="page-width">
+    <div class="site-header__inner">
+      {%- comment -%} Logo {%- endcomment -%}
+      <a href="{{ routes.root_url }}" class="site-header__logo">
+        {%- if section.settings.logo != blank -%}
+          <img
+            src="{{ section.settings.logo | image_url: width: 200 }}"
+            alt="{{ shop.name }}"
+            width="{{ section.settings.logo_width }}"
+            height="auto"
+            loading="eager"
+          >
+        {%- else -%}
+          {{ shop.name }}
+        {%- endif -%}
+      </a>
+
+      {%- comment -%} Desktop Navigation {%- endcomment -%}
+      <nav class="site-header__nav" aria-label="{{ 'header.navigation' | t }}">
+        {%- for link in section.settings.menu.links -%}
+          <a
+            href="{{ link.url }}"
+            class="{% if link.active %}is-active{% endif %}"
+            {% if link.current %}aria-current="page"{% endif %}
+          >
+            {{ link.title }}
+          </a>
+        {%- endfor -%}
+      </nav>
+
+      {%- comment -%} Icons {%- endcomment -%}
+      <div class="site-header__icons">
+        {%- comment -%} Search {%- endcomment -%}
+        <a href="{{ routes.search_url }}" class="site-header__icon" aria-label="{{ 'general.search' | t }}">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+          </svg>
+        </a>
+
+        {%- comment -%} Cart {%- endcomment -%}
+        <a
+          href="{{ routes.cart_url }}"
+          class="site-header__icon"
+          id="CartIcon"
+          aria-label="{{ 'cart.title' | t }}"
+          {% if settings.cart_type == 'drawer' %}data-cart-toggle{% endif %}
+        >
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+          {%- if cart.item_count > 0 -%}
+            <span class="site-header__badge" id="CartCount">{{ cart.item_count }}</span>
+          {%- endif -%}
+        </a>
+
+        {%- comment -%} Account {%- endcomment -%}
+        {%- if shop.customer_accounts_enabled -%}
+          <a href="{{ routes.account_url }}" class="site-header__icon" aria-label="Account">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+          </a>
+        {%- endif -%}
+
+        {%- comment -%} Mobile menu toggle {%- endcomment -%}
+        <button
+          class="site-header__menu-toggle"
+          id="MobileMenuToggle"
+          aria-label="{{ 'general.menu' | t }}"
+          aria-expanded="false"
+        >
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} Mobile Menu {%- endcomment -%}
+  <div class="site-header__mobile-menu" id="MobileMenu">
+    {%- for link in section.settings.menu.links -%}
+      <a href="{{ link.url }}">{{ link.title }}</a>
+    {%- endfor -%}
+    <a href="{{ routes.search_url }}">{{ 'general.search' | t }}</a>
+    {%- if shop.customer_accounts_enabled -%}
+      <a href="{{ routes.account_url }}">Account</a>
+    {%- endif -%}
+  </div>
+</header>
+
+{% schema %}
+{
+  "name": "Header",
+  "class": "section-header",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Logo width",
+      "min": 60,
+      "max": 250,
+      "step": 10,
+      "default": 140,
+      "unit": "px"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Navigation menu",
+      "default": "main-menu"
+    }
+  ]
+}
+{% endschema %}

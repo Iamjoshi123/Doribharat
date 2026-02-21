@@ -1,0 +1,236 @@
+[
+    {
+        "name": "theme_info",
+        "theme_name": "Doribharat Heritage",
+        "theme_version": "1.0.0",
+        "theme_author": "Doribharat",
+        "theme_documentation_url": "https://doribharat.com",
+        "theme_support_url": "https://doribharat.com"
+    },
+    {
+        "name": "Colors",
+        "settings": [
+            {
+                "type": "header",
+                "content": "Brand Colors"
+            },
+            {
+                "type": "color",
+                "id": "color_primary",
+                "label": "Primary (Terracotta)",
+                "default": "#A62C2B",
+                "info": "Used for CTAs, sale badges, and brand accents"
+            },
+            {
+                "type": "color",
+                "id": "color_primary_hover",
+                "label": "Primary hover",
+                "default": "#8e2525"
+            },
+            {
+                "type": "color",
+                "id": "color_secondary",
+                "label": "Secondary (Forest)",
+                "default": "#3D5A2F",
+                "info": "Used for category labels and eco badges"
+            },
+            {
+                "type": "color",
+                "id": "color_accent",
+                "label": "Accent (Gold)",
+                "default": "#E6B325",
+                "info": "Used for bestseller highlights"
+            },
+            {
+                "type": "header",
+                "content": "Surface Colors"
+            },
+            {
+                "type": "color",
+                "id": "color_background",
+                "label": "Page background",
+                "default": "#FDFCF9"
+            },
+            {
+                "type": "color",
+                "id": "color_surface",
+                "label": "Card / surface background",
+                "default": "#FFFFFF"
+            },
+            {
+                "type": "color",
+                "id": "color_text",
+                "label": "Body text",
+                "default": "#2D2D2D"
+            },
+            {
+                "type": "color",
+                "id": "color_text_muted",
+                "label": "Muted text",
+                "default": "#a8a29e"
+            }
+        ]
+    },
+    {
+        "name": "Typography",
+        "settings": [
+            {
+                "type": "header",
+                "content": "Heading Font"
+            },
+            {
+                "type": "font_picker",
+                "id": "heading_font",
+                "label": "Heading font",
+                "default": "dm_serif_display_n4",
+                "info": "Used for all headings and serif accents"
+            },
+            {
+                "type": "header",
+                "content": "Body Font"
+            },
+            {
+                "type": "font_picker",
+                "id": "body_font",
+                "label": "Body font",
+                "default": "plus_jakarta_sans_n3",
+                "info": "Used for body text, labels, and UI elements"
+            },
+            {
+                "type": "range",
+                "id": "body_font_size",
+                "label": "Base body font size",
+                "min": 14,
+                "max": 20,
+                "step": 1,
+                "default": 16,
+                "unit": "px"
+            }
+        ]
+    },
+    {
+        "name": "Layout",
+        "settings": [
+            {
+                "type": "range",
+                "id": "page_width",
+                "label": "Page width",
+                "min": 1000,
+                "max": 1600,
+                "step": 100,
+                "default": 1280,
+                "unit": "px"
+            },
+            {
+                "type": "range",
+                "id": "section_spacing",
+                "label": "Section spacing",
+                "min": 40,
+                "max": 120,
+                "step": 8,
+                "default": 80,
+                "unit": "px"
+            },
+            {
+                "type": "range",
+                "id": "card_radius",
+                "label": "Card corner radius",
+                "min": 0,
+                "max": 48,
+                "step": 4,
+                "default": 40,
+                "unit": "px"
+            }
+        ]
+    },
+    {
+        "name": "Social Media",
+        "settings": [
+            {
+                "type": "header",
+                "content": "WhatsApp"
+            },
+            {
+                "type": "text",
+                "id": "whatsapp_number",
+                "label": "WhatsApp number (with country code)",
+                "default": "919876543210",
+                "info": "Used for Order via WhatsApp buttons"
+            },
+            {
+                "type": "checkbox",
+                "id": "show_whatsapp_on_product",
+                "label": "Show WhatsApp button on product pages",
+                "default": true
+            },
+            {
+                "type": "header",
+                "content": "Social Links"
+            },
+            {
+                "type": "text",
+                "id": "social_instagram",
+                "label": "Instagram URL"
+            },
+            {
+                "type": "text",
+                "id": "social_facebook",
+                "label": "Facebook URL"
+            },
+            {
+                "type": "text",
+                "id": "social_twitter",
+                "label": "X (Twitter) URL"
+            },
+            {
+                "type": "text",
+                "id": "social_pinterest",
+                "label": "Pinterest URL"
+            }
+        ]
+    },
+    {
+        "name": "Cart",
+        "settings": [
+            {
+                "type": "select",
+                "id": "cart_type",
+                "label": "Cart type",
+                "options": [
+                    {
+                        "value": "drawer",
+                        "label": "Slide-out drawer"
+                    },
+                    {
+                        "value": "page",
+                        "label": "Dedicated page"
+                    }
+                ],
+                "default": "drawer"
+            },
+            {
+                "type": "checkbox",
+                "id": "cart_show_free_shipping_bar",
+                "label": "Show free shipping progress bar",
+                "default": true
+            },
+            {
+                "type": "text",
+                "id": "cart_free_shipping_threshold",
+                "label": "Free shipping threshold (amount in store currency)",
+                "default": "2000"
+            }
+        ]
+    },
+    {
+        "name": "Favicon",
+        "settings": [
+            {
+                "type": "image_picker",
+                "id": "favicon",
+                "label": "Favicon image",
+                "info": "32x32 pixels recommended"
+            }
+        ]
+    }
+]
