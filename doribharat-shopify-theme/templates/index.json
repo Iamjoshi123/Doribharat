@@ -1,0 +1,152 @@
+{
+    "sections": {
+        "hero": {
+            "type": "hero-banner",
+            "settings": {
+                "height": 90,
+                "tagline": "The Embroidered Edit",
+                "heading": "Carry your Heritage",
+                "subheading": "Discover a collection of hand-stitched Batwas, Totes, and Backpacks that blend modern utility with timeless Indian threads.",
+                "button_label": "Shop Collection",
+                "button_link": "shopify://collections/all"
+            }
+        },
+        "collection-list": {
+            "type": "collection-list",
+            "settings": {
+                "heading": "Curated Silhouettes",
+                "subheading": "From daily commutes to evening galas, find the perfect bag rooted in tradition.",
+                "columns": 4
+            },
+            "blocks": {
+                "block1": {
+                    "type": "collection"
+                },
+                "block2": {
+                    "type": "collection"
+                },
+                "block3": {
+                    "type": "collection"
+                },
+                "block4": {
+                    "type": "collection"
+                }
+            },
+            "block_order": [
+                "block1",
+                "block2",
+                "block3",
+                "block4"
+            ]
+        },
+        "featured": {
+            "type": "featured-collection",
+            "settings": {
+                "tagline": "Our Favorites",
+                "heading": "Signature Pieces",
+                "products_to_show": 4,
+                "products_per_row": 4
+            }
+        },
+        "trust-badges": {
+            "type": "trust-badges",
+            "blocks": {
+                "handcrafted": {
+                    "type": "badge",
+                    "settings": {
+                        "icon": "handcrafted",
+                        "title": "Handcrafted",
+                        "description": "Every piece is made by skilled artisans"
+                    }
+                },
+                "shipping": {
+                    "type": "badge",
+                    "settings": {
+                        "icon": "shipping",
+                        "title": "Free Shipping",
+                        "description": "Complimentary delivery across India"
+                    }
+                },
+                "secure": {
+                    "type": "badge",
+                    "settings": {
+                        "icon": "secure",
+                        "title": "Secure Payment",
+                        "description": "100% safe and encrypted checkout"
+                    }
+                },
+                "returns": {
+                    "type": "badge",
+                    "settings": {
+                        "icon": "returns",
+                        "title": "Easy Returns",
+                        "description": "Hassle-free 7-day return policy"
+                    }
+                }
+            },
+            "block_order": [
+                "handcrafted",
+                "shipping",
+                "secure",
+                "returns"
+            ]
+        },
+        "testimonials": {
+            "type": "testimonials",
+            "settings": {
+                "tagline": "Voices of Heritage",
+                "heading": "What Our Patrons Say",
+                "subheading": "Discover why artisan lovers trust Doribharat for heritage craftsmanship."
+            },
+            "blocks": {
+                "t1": {
+                    "type": "testimonial",
+                    "settings": {
+                        "name": "Priya Sharma",
+                        "location": "Mumbai",
+                        "text": "The Zardosi Batwa I ordered was absolutely stunning. The craftsmanship is beyond anything I've seen.",
+                        "rating": 5
+                    }
+                },
+                "t2": {
+                    "type": "testimonial",
+                    "settings": {
+                        "name": "Ananya Patel",
+                        "location": "Delhi",
+                        "text": "I got the Aari Canvas Tote for daily use and I'm in love! It's both beautiful and practical.",
+                        "rating": 5
+                    }
+                },
+                "t3": {
+                    "type": "testimonial",
+                    "settings": {
+                        "name": "Ritu Desai",
+                        "location": "Jaipur",
+                        "text": "Ordered 50 pieces for wedding favors. The team was incredibly helpful, and the guests were thrilled!",
+                        "rating": 5
+                    }
+                }
+            },
+            "block_order": [
+                "t1",
+                "t2",
+                "t3"
+            ]
+        },
+        "newsletter": {
+            "type": "newsletter",
+            "settings": {
+                "heading": "Join the Heritage Circle",
+                "subheading": "Be the first to discover new collections, artisan stories, and exclusive offers."
+            }
+        }
+    },
+    "order": [
+        "hero",
+        "collection-list",
+        "featured",
+        "trust-badges",
+        "testimonials",
+        "newsletter"
+    ]
+}

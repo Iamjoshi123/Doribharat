@@ -1,0 +1,28 @@
+{
+    "type": "header",
+    "name": "Header group",
+    "sections": {
+        "announcement-bar": {
+            "type": "announcement-bar",
+            "settings": {
+                "show_announcement": true,
+                "text": "✨ Free shipping on all orders above ₹2000 — Handcrafted with love",
+                "bar_color": "#2D2D2D",
+                "text_color": "#FDFCF9",
+                "scroll_text": false,
+                "dismissible": true
+            }
+        },
+        "header": {
+            "type": "header",
+            "settings": {
+                "logo_width": 140,
+                "menu": "main-menu"
+            }
+        }
+    },
+    "order": [
+        "announcement-bar",
+        "header"
+    ]
+}

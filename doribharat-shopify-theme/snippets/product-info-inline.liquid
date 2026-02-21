@@ -1,0 +1,263 @@
+{%- comment -%}
+  Snippet: Product Info (Inline)
+  Used inside the main-product section
+{%- endcomment -%}
+
+<div class="product-info">
+  {%- comment -%} Category {%- endcomment -%}
+  <span class="product-info__category">{{ product.type }}</span>
+
+  <h1 class="product-info__title serif">{{ product.title }}</h1>
+
+  {%- comment -%} Pricing {%- endcomment -%}
+  <div class="product-info__price-row">
+    <span class="product-info__price">{{ product.price | money }}</span>
+    {%- if product.compare_at_price > product.price -%}
+      <div class="product-info__compare">
+        <span class="product-info__compare-price">{{ product.compare_at_price | money }}</span>
+        {%- assign save_percent = product.compare_at_price | minus: product.price | times: 100 | divided_by: product.compare_at_price -%}
+        <span class="product-info__save">{{ 'products.product.save_percent' | t: percent: save_percent }}</span>
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Info Tabs {%- endcomment -%}
+  <div class="product-info__tabs">
+    <button class="product-info__tab is-active" data-tab="desc" onclick="switchTab(this)">
+      {{ 'products.product.description_tab' | t }}
+    </button>
+    <button class="product-info__tab" data-tab="specs" onclick="switchTab(this)">
+      {{ 'products.product.specs_tab' | t }}
+    </button>
+    <button class="product-info__tab" data-tab="care" onclick="switchTab(this)">
+      {{ 'products.product.care_tab' | t }}
+    </button>
+  </div>
+
+  {%- comment -%} Tab: Description {%- endcomment -%}
+  <div class="product-info__tab-content is-active" data-tab-content="desc">
+    <div class="product-info__description">{{ product.description }}</div>
+  </div>
+
+  {%- comment -%} Tab: Specifications {%- endcomment -%}
+  <div class="product-info__tab-content" data-tab-content="specs">
+    {%- if product.metafields.custom.material != blank -%}
+      <div class="product-info__spec-row">
+        <span class="product-info__spec-label">{{ 'products.product.material' | t }}</span>
+        <span class="product-info__spec-value">{{ product.metafields.custom.material }}</span>
+      </div>
+    {%- endif -%}
+
+    {%- if product.metafields.custom.dimensions != blank -%}
+      <div class="product-info__spec-row">
+        <span class="product-info__spec-label">{{ 'products.product.dimensions' | t }}</span>
+        <span class="product-info__spec-value">{{ product.metafields.custom.dimensions }}</span>
+      </div>
+    {%- endif -%}
+
+    {%- if product.metafields.custom.specifications != blank -%}
+      {%- assign specs = product.metafields.custom.specifications.value -%}
+      {%- for spec in specs -%}
+        <div class="product-info__spec-row">
+          <span class="product-info__spec-label">{{ spec.label }}</span>
+          <span class="product-info__spec-value">{{ spec.value }}</span>
+        </div>
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Tab: Care {%- endcomment -%}
+  <div class="product-info__tab-content" data-tab-content="care">
+    {%- if product.metafields.custom.care_instructions != blank -%}
+      <p class="product-info__care">{{ product.metafields.custom.care_instructions }}</p>
+    {%- endif -%}
+
+    {%- if product.metafields.custom.additional_care != blank -%}
+      <div class="product-info__care-list">
+        {%- assign care_tips = product.metafields.custom.additional_care.value -%}
+        {%- for tip in care_tips -%}
+          <div class="product-info__care-item">
+            <span class="product-info__care-dot"></span>
+            <span>{{ tip }}</span>
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Actions {%- endcomment -%}
+  <div class="product-info__actions">
+    <form method="post" action="/cart/add" id="ProductForm">
+      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+
+      <div class="product-info__row">
+        <div class="qty-selector">
+          <button type="button" class="qty-selector__btn" onclick="updateQty(-1)">−</button>
+          <input type="number" name="quantity" value="1" min="1" class="qty-selector__value" id="ProductQty" style="border:none;background:transparent;text-align:center;font-weight:700;width:40px;">
+          <button type="button" class="qty-selector__btn" onclick="updateQty(1)">+</button>
+        </div>
+      </div>
+
+      <div class="product-info__buttons" style="margin-top: 16px;">
+        {%- if product.available -%}
+          <button type="submit" class="btn btn--dark btn--full">
+            {{ 'products.product.add_to_cart' | t }}
+          </button>
+        {%- else -%}
+          <button type="button" class="btn btn--outline btn--full" disabled>
+            {{ 'products.product.sold_out' | t }}
+          </button>
+        {%- endif -%}
+
+        {%- if settings.show_whatsapp_on_product -%}
+          <a
+            href="https://wa.me/{{ settings.whatsapp_number }}?text={{ 'Hi Doribharat! I am interested in ' | append: product.title | append: ' (Price: ' | append: product.price | money | append: '). Product: ' | append: shop.url | append: product.url | url_encode }}"
+            target="_blank"
+            rel="noopener"
+            class="btn btn--whatsapp btn--full"
+          >
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0012.05 0"/>
+            </svg>
+            {{ 'products.product.order_whatsapp' | t }}
+          </a>
+        {%- endif -%}
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  .product-info__category {
+    color: var(--color-secondary);
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    font-size: 10px;
+  }
+  .product-info__title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-top: 8px;
+    margin-bottom: 16px;
+    line-height: 1.1;
+  }
+  .product-info__price-row {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  .product-info__price {
+    font-weight: var(--font-weight-bold);
+    font-size: 1.875rem;
+  }
+  .product-info__compare { display: flex; flex-direction: column; }
+  .product-info__compare-price {
+    color: var(--color-text-muted);
+    text-decoration: line-through;
+    font-size: 14px;
+    font-weight: var(--font-weight-light);
+    line-height: 1;
+  }
+  .product-info__save {
+    color: var(--color-secondary);
+    font-size: 10px;
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    margin-top: 4px;
+  }
+  .product-info__tabs {
+    display: flex;
+    gap: 24px;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 24px;
+  }
+  @media (min-width: 750px) { .product-info__tabs { gap: 32px; } }
+  .product-info__tab {
+    padding-bottom: 12px;
+    font-size: 11px;
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--color-text-muted);
+    transition: all var(--duration-normal);
+    background: none;
+    cursor: pointer;
+  }
+  .product-info__tab.is-active {
+    border-bottom-color: var(--color-primary);
+    color: var(--color-text);
+  }
+  .product-info__tab-content {
+    display: none;
+    animation: fadeIn var(--duration-slow) var(--ease-smooth);
+  }
+  .product-info__tab-content.is-active { display: block; }
+  .product-info__description {
+    color: var(--color-text-light);
+    line-height: 1.7;
+    font-weight: var(--font-weight-light);
+    margin-bottom: 32px;
+  }
+  .product-info__spec-row {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+  }
+  .product-info__spec-label {
+    font-size: 10px;
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--color-text-muted);
+  }
+  .product-info__spec-value {
+    font-size: 14px;
+    font-weight: var(--font-weight-medium);
+  }
+  .product-info__care {
+    color: var(--color-text-light);
+    font-style: italic;
+    font-weight: var(--font-weight-light);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+  .product-info__care-list { display: flex; flex-direction: column; gap: 8px; }
+  .product-info__care-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    font-size: 14px;
+    color: var(--color-text-light);
+    font-weight: var(--font-weight-light);
+  }
+  .product-info__care-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--color-primary);
+    border-radius: 50%;
+    margin-top: 8px;
+    flex-shrink: 0;
+  }
+  .product-info__actions {
+    padding-top: 24px;
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .product-info__row { display: flex; gap: 16px; align-items: center; }
+  .product-info__buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 749px) {
+    .product-info__buttons { grid-template-columns: 1fr; }
+  }
+</style>

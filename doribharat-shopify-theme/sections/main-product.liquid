@@ -1,0 +1,59 @@
+{%- comment -%}
+  Section: Main Product
+  Wrapper that places gallery + info in a 2-col grid
+{%- endcomment -%}
+
+{%- style -%}
+  .product-page {
+    padding-top: 16px;
+  }
+
+  .product-page__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+
+  @media (min-width: 990px) {
+    .product-page__grid { gap: 64px; }
+  }
+
+  @media (max-width: 749px) {
+    .product-page__grid {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+  }
+{%- endstyle -%}
+
+<section class="product-page section-spacing" data-section-id="{{ section.id }}">
+  <div class="page-width">
+    {%- comment -%} Breadcrumb {%- endcomment -%}
+    <nav class="breadcrumb">
+      <a href="{{ routes.root_url }}">Home</a>
+      <span>/</span>
+      {%- if product.collections.size > 0 -%}
+        <a href="{{ product.collections.first.url }}">{{ product.collections.first.title }}</a>
+        <span>/</span>
+      {%- endif -%}
+      <span class="breadcrumb__current">{{ product.title }}</span>
+    </nav>
+
+    <div class="product-page__grid">
+      {%- comment -%} Gallery {%- endcomment -%}
+      {% render 'product-gallery-inline', product: product %}
+
+      {%- comment -%} Info {%- endcomment -%}
+      {% render 'product-info-inline', product: product %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Product Page",
+  "class": "section-main-product",
+  "settings": []
+}
+{% endschema %}

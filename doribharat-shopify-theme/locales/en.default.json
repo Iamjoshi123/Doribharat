@@ -1,0 +1,136 @@
+{
+    "general": {
+        "back_to_top": "Back to top",
+        "close": "Close",
+        "menu": "Menu",
+        "search": "Search",
+        "loading": "Loading..."
+    },
+    "accessibility": {
+        "skip_to_content": "Skip to content",
+        "close_modal": "Close dialog",
+        "wishlist_add": "Add to wishlist",
+        "wishlist_remove": "Remove from wishlist"
+    },
+    "header": {
+        "navigation": "Main navigation",
+        "cart_count": {
+            "one": "{{ count }} item",
+            "other": "{{ count }} items"
+        }
+    },
+    "products": {
+        "product": {
+            "add_to_cart": "Add to Cart",
+            "quick_add": "Quick Add +",
+            "sold_out": "Sold Out",
+            "sale": "Sale",
+            "new": "New",
+            "bestseller": "Bestseller",
+            "save_percent": "Save {{ percent }}%",
+            "quantity": "Quantity",
+            "description_tab": "Narrative",
+            "specs_tab": "Details",
+            "care_tab": "Care",
+            "material": "Material",
+            "dimensions": "Dimensions",
+            "order_whatsapp": "Order via WhatsApp",
+            "add_to_wishlist": "Add to Wishlist",
+            "in_wishlist": "In Wishlist",
+            "view_collection": "View Collection"
+        }
+    },
+    "collections": {
+        "title": "Collections",
+        "curated_selection": "Curated Selection",
+        "discover_more": "Discover More",
+        "no_products": "No products found in this collection yet.",
+        "explore_description": "Explore our finest {{ collection }} collection, meticulously crafted with tradition in mind."
+    },
+    "cart": {
+        "title": "Your Collection",
+        "empty": "Your bag is empty",
+        "empty_description": "Carry your heritage. Start your collection today.",
+        "subtotal": "Subtotal",
+        "shipping": "Shipping",
+        "shipping_free": "Complimentary",
+        "total": "Total",
+        "checkout": "Proceed to Checkout",
+        "view_cart": "View Cart",
+        "continue_shopping": "Continue Shopping",
+        "remove": "Remove",
+        "order_whatsapp": "Order via WhatsApp",
+        "secure_delivery": "Secure Handcrafted Delivery"
+    },
+    "sections": {
+        "hero": {
+            "default_tagline": "The Embroidered Edit",
+            "default_title": "Carry your Heritage",
+            "default_subtitle": "Discover a collection of hand-stitched Batwas, Totes, and Backpacks that blend modern utility with timeless Indian threads.",
+            "default_cta": "Shop Collection"
+        },
+        "collection_list": {
+            "heading": "Curated Silhouettes",
+            "subheading": "From daily commutes to evening galas, find the perfect bag rooted in tradition."
+        },
+        "featured_collection": {
+            "tagline": "Our Favorites",
+            "heading": "Signature Pieces"
+        },
+        "testimonials": {
+            "heading": "Voices of Heritage",
+            "subheading": "What our patrons say about their Doribharat experience."
+        },
+        "trust_badges": {
+            "handcrafted": "Handcrafted",
+            "handcrafted_desc": "Every piece is made by skilled artisans",
+            "free_shipping": "Free Shipping",
+            "free_shipping_desc": "Complimentary delivery across India",
+            "secure_payment": "Secure Payment",
+            "secure_payment_desc": "100% safe and encrypted checkout",
+            "easy_returns": "Easy Returns",
+            "easy_returns_desc": "Hassle-free 7-day return policy"
+        },
+        "newsletter": {
+            "heading": "Join the Heritage Circle",
+            "subheading": "Be the first to discover new collections, artisan stories, and exclusive offers.",
+            "placeholder": "Enter your email",
+            "button": "Subscribe",
+            "disclaimer": "We respect your privacy. Unsubscribe anytime."
+        },
+        "bulk_order": {
+            "tagline": "Artisanal Gifting",
+            "heading": "Heritage for Every Guest",
+            "subheading": "From grand weddings to corporate milestones, share the soul of Indian craftsmanship.",
+            "name": "Full Name",
+            "whatsapp": "WhatsApp Number",
+            "occasion": "Type of Occasion",
+            "quantity_label": "Estimated Quantity",
+            "message": "Tell us your requirements",
+            "submit": "Request Heritage Quote",
+            "disclaimer": "Our team will reach out within 24 business hours",
+            "success_heading": "Inquiry Initiated",
+            "success_message": "Thank you for choosing Doribharat. We have received your request and will contact you via WhatsApp shortly.",
+            "occasions": {
+                "wedding": "Wedding",
+                "corporate": "Corporate Gifting",
+                "festive": "Festive Celebration",
+                "retail": "Retail Bulk",
+                "other": "Other Event"
+            }
+        }
+    },
+    "footer": {
+        "collections": "Collections",
+        "contact_us": "Contact Us",
+        "copyright": "© {{ year }} Doribharat Artisanal Bags. Crafted with Love in India.",
+        "about": "We believe that bags are more than accessories — they are vessels of culture. Every Doribharat bag is handcrafted by artisans who have perfected the art of Dori work over generations."
+    },
+    "wishlist": {
+        "tagline": "Curation",
+        "heading": "My Favorites",
+        "subheading": "The treasures you've discovered and held close.",
+        "empty": "Your wishlist is waiting to be filled with heritage.",
+        "start_discovering": "Start Discovering"
+    }
+}

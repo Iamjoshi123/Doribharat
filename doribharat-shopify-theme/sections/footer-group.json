@@ -1,0 +1,18 @@
+{
+    "type": "footer",
+    "name": "Footer group",
+    "sections": {
+        "footer": {
+            "type": "footer",
+            "settings": {
+                "about_text": "We believe that bags are more than accessories — they are vessels of culture. Every Doribharat bag is handcrafted by artisans who have perfected the art of Dori work over generations.",
+                "col2_heading": "Collections",
+                "footer_menu": "footer",
+                "email": "hello@doribharat.com"
+            }
+        }
+    },
+    "order": [
+        "footer"
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "sections": {
+        "main": {
+            "type": "bulk-order-form",
+            "settings": {
+                "tagline": "Artisanal Gifting",
+                "heading": "Heritage for Every Guest",
+                "subheading": "From grand weddings to corporate milestones, share the soul of Indian craftsmanship. Our artisans curate bespoke collections for your special occasions."
+            }
+        }
+    },
+    "order": [
+        "main"
+    ]
+}
