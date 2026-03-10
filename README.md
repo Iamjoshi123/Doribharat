@@ -137,7 +137,7 @@ The admin experience now signs short-lived upload URLs so product images are per
 
 ## Environment files
 
-- **Frontend (Vite):** Copy `.env.local.example` to `.env.local` and adjust `VITE_*` + `GEMINI_API_KEY` values.
+- **Frontend (Vite):** Copy `.env.local.example` to `.env.local` and set `VITE_CLOUD_RUN_BASE_URL`, `VITE_FRONTEND_ORIGIN`, and `VITE_GEMINI_API_KEY`.
 - **Backend API:** Copy `backend/.env.example` to `backend/.env` (or set the variables in Cloud Run/Secret Manager).
 - **Node API & media signer (`server/`):** Copy `server/.env.example` to `server/.env` when running locally; set the same keys in your runtime environment for deployments.
 

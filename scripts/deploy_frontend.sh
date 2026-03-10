@@ -15,13 +15,13 @@ if ! command -v firebase &> /dev/null; then
 fi
 
 # Get Backend URL if not provided
-if [ -z "$VITE_BACKEND_URL" ]; then
+if [ -z "$VITE_CLOUD_RUN_BASE_URL" ]; then
     echo "    Fetching Backend URL from Cloud Run..."
-    VITE_BACKEND_URL=$(gcloud run services describe doribharat-api --region $REGION --format 'value(status.url)')
-    echo "    Backend URL: $VITE_BACKEND_URL"
+    VITE_CLOUD_RUN_BASE_URL=$(gcloud run services describe doribharat-api --region $REGION --format 'value(status.url)')
+    echo "    Backend URL: $VITE_CLOUD_RUN_BASE_URL"
 fi
 
-if [ -z "$VITE_BACKEND_URL" ]; then
+if [ -z "$VITE_CLOUD_RUN_BASE_URL" ]; then
     echo "❌ Could not find Backend URL. Is the backend deployed?"
     exit 1
 fi
@@ -29,8 +29,9 @@ fi
 echo "--> [2/4] Configuring Environment..."
 # Create a temporary .env.production for the build
 cat > .env.production <<EOF
-VITE_BACKEND_URL=$VITE_BACKEND_URL
-GEMINI_API_KEY=${GEMINI_API_KEY:-""}
+VITE_CLOUD_RUN_BASE_URL=$VITE_CLOUD_RUN_BASE_URL
+VITE_FRONTEND_ORIGIN=${VITE_FRONTEND_ORIGIN:-""}
+VITE_GEMINI_API_KEY=${VITE_GEMINI_API_KEY:-""}
 EOF
 
 echo "--> [3/4] Building Frontend..."
